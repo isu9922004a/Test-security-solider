@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>軍事準則測驗 v1.0 (標點符號版)</title>
+    <title>軍事準則測驗 v1.1 (主選單版)</title>
     <style>
         :root {
             --primary: #2c3e50;
@@ -12,6 +12,7 @@
             --highlight: #f39c12;
             --bg: #fdfbf7;
             --text: #2c3e50;
+            --menu-btn-bg: #fff;
         }
 
         body {
@@ -35,9 +36,64 @@
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             position: relative;
+            /* 預設隱藏所有區塊，由 JS 控制顯示 */
+            display: none; 
         }
 
-        /* 頂部狀態列 */
+        /* 通用顯示控制 */
+        .active-view { display: block !important; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 主選單 (Menu) 樣式 --- */
+        .menu-title {
+            text-align: center;
+            color: var(--primary);
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 5px;
+            border-bottom: 3px solid var(--highlight);
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        .menu-subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .menu-btn {
+            background: var(--menu-btn-bg);
+            border: 2px solid #eee;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+
+        .btn-icon { font-size: 1.5rem; margin-right: 15px; }
+        .btn-text { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+        .btn-count { font-size: 0.85rem; color: #95a5a6; background: #f8f9fa; padding: 2px 8px; border-radius: 10px; }
+
+        /* --- 測驗介面樣式 --- */
         .header-info {
             display: flex;
             justify-content: space-between;
@@ -47,18 +103,22 @@
             padding-bottom: 15px;
         }
 
-        .badge {
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
-            font-weight: bold;
+        .home-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 5px;
+            border-radius: 5px;
+            transition: 0.2s;
         }
+        .home-btn:hover { background: #eee; }
+
+        .badge-group { display: flex; gap: 10px; align-items: center; }
+        .badge { padding: 5px 12px; border-radius: 20px; font-size: 0.9rem; font-weight: bold; }
         .badge-progress { background: #ecf0f1; color: #7f8c8d; }
         .badge-score { background: var(--highlight); color: white; }
 
-        /* 題目區 */
-        .q-section { margin-bottom: 15px; }
-        
         .cat-tag {
             background: var(--primary);
             color: white;
@@ -70,14 +130,8 @@
             font-weight: bold;
         }
 
-        .q-content {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: var(--primary);
-            line-height: 1.4;
-        }
+        .q-content { font-size: 1.35rem; font-weight: 800; color: var(--primary); line-height: 1.4; margin-bottom: 15px; }
 
-        /* 輸入區 */
         textarea {
             width: 100%;
             height: 110px;
@@ -92,120 +146,105 @@
             transition: all 0.2s;
             color: #333;
         }
+        
+        textarea:focus { border-color: var(--primary); background: white; }
+        textarea.correct-state { border-color: var(--success); background: #f0fdf4; color: #166534; }
+        textarea.wrong-state { border-color: var(--accent); background: #fef2f2; color: #991b1b; }
 
-        textarea:focus {
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.1);
-        }
-
-        textarea.correct-state {
-            border-color: var(--success);
-            background: #f0fdf4;
-            color: #166534;
-        }
-
-        textarea.wrong-state {
-            border-color: var(--accent);
-            background: #fef2f2;
-            color: #991b1b;
-        }
-
-        /* 回饋區 (糾錯+口訣) */
-        .feedback-area {
-            display: none; /* 初始隱藏 */
-            margin-top: 20px;
-            animation: slideUp 0.3s ease-out;
-        }
-
-        .comparison-box {
-            background: #f8fafc;
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid #e2e8f0;
-        }
-
+        /* 回饋區 */
+        .feedback-area { display: none; margin-top: 20px; animation: slideUp 0.3s ease-out; }
+        .comparison-box { background: #f8fafc; border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
         .row { display: flex; flex-direction: column; margin-bottom: 10px; }
-        .row:last-child { margin-bottom: 0; }
-        
-        .label { font-size: 0.8rem; color: #64748b; margin-bottom: 4px; font-weight: bold; }
+        .label { font-size: 0.8rem; color: #64748b; font-weight: bold; }
         .text-val { font-size: 1.1rem; font-weight: bold; line-height: 1.5; }
-        
         .val-wrong { color: var(--accent); text-decoration: line-through; text-decoration-color: rgba(192, 57, 43, 0.4); }
         .val-correct { color: var(--success); }
 
-        /* 諧音口訣卡 */
-        .mnemonic-card {
-            background: #fffbeb;
-            border: 2px dashed #fcd34d;
-            border-radius: 10px;
-            padding: 15px;
-            position: relative;
-        }
-
-        .mnemonic-title {
-            color: #d97706;
-            font-weight: bold;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .mnemonic-content {
-            font-size: 1.1rem;
-            color: #4b5563;
-            font-weight: 500;
-            line-height: 1.5;
-        }
-        
+        .mnemonic-card { background: #fffbeb; border: 2px dashed #fcd34d; border-radius: 10px; padding: 15px; }
+        .mnemonic-title { color: #d97706; font-weight: bold; font-size: 0.9rem; margin-bottom: 5px; }
         .highlight { color: #d35400; font-weight: 800; background: rgba(243, 156, 18, 0.15); padding: 0 2px; }
 
         /* 按鈕群 */
-        .controls {
-            display: flex;
-            gap: 12px;
-            margin-top: 25px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.1s;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
+        .controls { display: flex; gap: 12px; margin-top: 25px; }
+        .btn { flex: 1; padding: 14px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; color: white; display: flex; justify-content: center; align-items: center; }
         .btn:active { transform: scale(0.98); }
         .btn-check { background-color: var(--primary); }
         .btn-back { background-color: #95a5a6; flex: 0.3; }
         .btn-next { background-color: var(--success); display: none; }
+        .btn-menu { background-color: var(--primary); width: 100%; margin-top: 10px; }
 
         /* 結果畫面 */
-        .result-view { display: none; text-align: center; }
+        .result-view { text-align: center; }
         .final-score { font-size: 5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 20px 0; }
         .result-comment { font-size: 1.3rem; color: #555; margin-bottom: 30px; }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (min-width: 600px) {
+            .menu-grid { grid-template-columns: 1fr 1fr; }
+            .menu-btn-full { grid-column: span 2; }
+        }
 
     </style>
 </head>
 <body>
 
-    <!-- 測驗介面 -->
+    <!-- 1. 主選單 (Menu Interface) -->
+    <div class="container active-view" id="menu-interface">
+        <div style="text-align: center;">
+            <div class="menu-title">🛡️ 戰情中心</div>
+            <div class="menu-subtitle">請選擇鑑測科目</div>
+        </div>
+
+        <div class="menu-grid">
+            <div class="menu-btn" onclick="startQuiz('sentry')">
+                <div style="display:flex; align-items:center;">
+                    <span class="btn-icon">👮</span>
+                    <span class="btn-text">衛哨守則</span>
+                </div>
+                <span class="btn-count">8題</span>
+            </div>
+
+            <div class="menu-btn" onclick="startQuiz('safety')">
+                <div style="display:flex; align-items:center;">
+                    <span class="btn-icon">🚨</span>
+                    <span class="btn-text">安官守則</span>
+                </div>
+                <span class="btn-count">8題</span>
+            </div>
+
+            <div class="menu-btn" onclick="startQuiz('timing')">
+                <div style="display:flex; align-items:center;">
+                    <span class="btn-icon">🧟</span>
+                    <span class="btn-text">用槍時機</span>
+                </div>
+                <span class="btn-count">5題</span>
+            </div>
+
+            <div class="menu-btn" onclick="startQuiz('guide')">
+                <div style="display:flex; align-items:center;">
+                    <span class="btn-icon">🔫</span>
+                    <span class="btn-text">用槍要領</span>
+                </div>
+                <span class="btn-count">5題</span>
+            </div>
+
+            <div class="menu-btn menu-btn-full" onclick="startQuiz('all')" style="background:#fdf2e9; border-color:#f39c12;">
+                <div style="display:flex; align-items:center;">
+                    <span class="btn-icon">🔥</span>
+                    <span class="btn-text">綜合大亂鬥 (隨機10題)</span>
+                </div>
+                <span class="btn-count">High</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 測驗介面 (Quiz Interface) -->
     <div class="container" id="quiz-interface">
         <div class="header-info">
-            <span class="badge badge-progress" id="progress-disp">1 / 10</span>
-            <span class="badge badge-score" id="score-disp">得分: 0</span>
+            <button class="home-btn" onclick="confirmExit()" title="回主選單">🏠</button>
+            <div class="badge-group">
+                <span class="badge badge-progress" id="progress-disp">1 / 10</span>
+                <span class="badge badge-score" id="score-disp">得分: 0</span>
+            </div>
         </div>
 
         <div class="q-section">
@@ -217,19 +256,17 @@
 
         <!-- 回饋區 -->
         <div class="feedback-area" id="feedback-ui">
-            <!-- 比對區：答錯才詳細顯示，答對顯示恭喜 -->
             <div class="comparison-box" id="comparison-box">
                 <div class="row" id="user-row">
                     <span class="label">❌ 您的答案：</span>
                     <span class="text-val val-wrong" id="user-ans-text"></span>
                 </div>
                 <div class="row">
-                    <span class="label">✅ 正確條文 (含標點)：</span>
+                    <span class="label">✅ 正確條文：</span>
                     <span class="text-val val-correct" id="correct-ans-text"></span>
                 </div>
             </div>
 
-            <!-- 諧音提示 -->
             <div class="mnemonic-card">
                 <div class="mnemonic-title">💡 腦內諧音口訣</div>
                 <div class="mnemonic-content" id="hint-text"></div>
@@ -242,112 +279,146 @@
         </div>
     </div>
 
-    <!-- 結算畫面 -->
+    <!-- 3. 結算畫面 (Result Interface) -->
     <div class="container result-view" id="result-interface">
         <h2 style="color:var(--primary); margin-bottom:0;">鑑測成績單</h2>
-        <div style="font-size:0.9rem; color:#999; margin-bottom:10px;">v1.0 標點符號版</div>
+        <div style="font-size:0.9rem; color:#999; margin-bottom:10px;">本次測驗結束</div>
         <div class="final-score" id="final-score-val">0</div>
         <div class="result-comment" id="final-comment"></div>
-        <button class="btn btn-check" onclick="location.reload()" style="width:100%;">重新挑戰</button>
+        
+        <button class="btn btn-check" onclick="restartCurrentQuiz()" style="margin-bottom: 10px;">再測一次 (同科目)</button>
+        <button class="btn btn-menu" onclick="showMenu()">回主選單 (選其他)</button>
     </div>
 
     <script>
-        // v1.0 資料庫：含標點符號正確版
+        // 資料庫：含標點符號正確版
         const database = [
-            // 衛哨守則
-            { cat: "衛哨守則", id: 1, q: "第 1 條", a: "服裝整齊、配件光亮。", h: "鋼鐵人<span class='highlight'>服裝</span>是鑽石，<span class='highlight'>配件</span>是鏡子。(整齊、光亮)" },
-            { cat: "衛哨守則", id: 2, q: "第 2 條", a: "精神飽滿、姿態端正。", h: "喝蠻牛<span class='highlight'>精神</span>好，背插鋼板<span class='highlight'>姿態</span>正。(飽滿、端正)" },
-            { cat: "衛哨守則", id: 3, q: "第 3 條", a: "械彈攜帶、確遵規定。", h: "<span class='highlight'>械彈</span>帶不好就完蛋，請把蛋蛋綁在槍上。(攜帶、規定)" },
-            { cat: "衛哨守則", id: 4, q: "第 4 條", a: "堅守崗位、嚴密搜查。", h: "腳踩三秒膠<span class='highlight'>堅守</span>，拿放大鏡<span class='highlight'>搜查</span>螞蟻。(崗位、搜查)" },
-            { cat: "衛哨守則", id: 5, q: "第 5 條", a: "提高警覺、時時戒備。", h: "頭裝雷達<span class='highlight'>警覺</span>，手拿電擊棒<span class='highlight'>戒備</span>。(警覺、戒備)" },
-            { cat: "衛哨守則", id: 6, q: "第 6 條", a: "不看熱鬧、注意可疑。", h: "辣妹跳舞<span class='highlight'>不看</span>(熱鬧)，只盯著<span class='highlight'>可疑</span>阿伯。(熱鬧、可疑)" },
-            { cat: "衛哨守則", id: 7, q: "第 7 條", a: "服勤認真、說話客氣。", h: "殺氣騰騰但對人<span class='highlight'>客氣</span>，像空姐一樣。(認真、客氣)" },
-            { cat: "衛哨守則", id: 8, q: "第 8 條", a: "嚴格管制、仔細查驗。", h: "放下鐵門<span class='highlight'>管制</span>，用顯微鏡<span class='highlight'>查驗</span>細菌。(嚴格、仔細)" },
+            // 衛哨守則 (type: sentry)
+            { type: "sentry", cat: "衛哨守則", id: 1, q: "第 1 條", a: "服裝整齊、配件光亮。", h: "鋼鐵人<span class='highlight'>服裝</span>是鑽石，<span class='highlight'>配件</span>是鏡子。" },
+            { type: "sentry", cat: "衛哨守則", id: 2, q: "第 2 條", a: "精神飽滿、姿態端正。", h: "喝蠻牛<span class='highlight'>精神</span>好，背插鋼板<span class='highlight'>姿態</span>正。" },
+            { type: "sentry", cat: "衛哨守則", id: 3, q: "第 3 條", a: "械彈攜帶、確遵規定。", h: "<span class='highlight'>械彈</span>帶不好就完蛋，請把蛋蛋綁在槍上。" },
+            { type: "sentry", cat: "衛哨守則", id: 4, q: "第 4 條", a: "堅守崗位、嚴密搜查。", h: "腳踩三秒膠<span class='highlight'>堅守</span>，拿放大鏡<span class='highlight'>搜查</span>螞蟻。" },
+            { type: "sentry", cat: "衛哨守則", id: 5, q: "第 5 條", a: "提高警覺、時時戒備。", h: "頭裝雷達<span class='highlight'>警覺</span>，手拿電擊棒<span class='highlight'>戒備</span>。" },
+            { type: "sentry", cat: "衛哨守則", id: 6, q: "第 6 條", a: "不看熱鬧、注意可疑。", h: "辣妹跳舞<span class='highlight'>不看</span>(熱鬧)，只盯著<span class='highlight'>可疑</span>阿伯。" },
+            { type: "sentry", cat: "衛哨守則", id: 7, q: "第 7 條", a: "服勤認真、說話客氣。", h: "殺氣騰騰但對人<span class='highlight'>客氣</span>，像空姐一樣。" },
+            { type: "sentry", cat: "衛哨守則", id: 8, q: "第 8 條", a: "嚴格管制、仔細查驗。", h: "放下鐵門<span class='highlight'>管制</span>，用顯微鏡<span class='highlight'>查驗</span>細菌。" },
 
-            // 安官守則
-            { cat: "安官守則", id: 1, q: "第 1 條", a: "負責單位安全。", h: "抱著巨大的<span class='highlight'>保險箱</span>(單位安全)不放。" },
-            { cat: "安官守則", id: 2, q: "第 2 條", a: "械彈清點管制。", h: "像數鈔票一樣<span class='highlight'>數子彈</span>，少一顆就切蛋(清點)。" },
-            { cat: "安官守則", id: 3, q: "第 3 條", a: "嚴密水電管制。", h: "左手關皮卡丘(電)，右手關傑尼龜(水)，嚴密<span class='highlight'>水電</span>。" },
-            { cat: "安官守則", id: 4, q: "第 4 條", a: "清查就寢人數。", h: "拿牧羊杖去寢室<span class='highlight'>數羊</span>(就寢人數)。" },
-            { cat: "安官守則", id: 5, q: "第 5 條", a: "巡視衛哨勤務。", h: "拿望遠鏡偷看門口<span class='highlight'>衛哨</span>有沒有偷睡覺(巡視)。" },
-            { cat: "安官守則", id: 6, q: "第 6 條", a: "注意可疑人物。", h: "桌底鑽出一個<span class='highlight'>忍者</span>(可疑人物)。" },
-            { cat: "安官守則", id: 7, q: "第 7 條", a: "接聽戰情電話。", h: "電話響像空襲警報，嚇到站起來接<span class='highlight'>戰情</span>。" },
-            { cat: "安官守則", id: 8, q: "第 8 條", a: "反映緊急事故。", h: "失火了(緊急)！快按桌上紅色的<span class='highlight'>SOS按鈕</span>(反映)。" },
+            // 安官守則 (type: safety)
+            { type: "safety", cat: "安官守則", id: 1, q: "第 1 條", a: "負責單位安全。", h: "抱著巨大的<span class='highlight'>保險箱</span>(單位安全)不放。" },
+            { type: "safety", cat: "安官守則", id: 2, q: "第 2 條", a: "械彈清點管制。", h: "像數鈔票一樣<span class='highlight'>數子彈</span>，少一顆就切蛋。" },
+            { type: "safety", cat: "安官守則", id: 3, q: "第 3 條", a: "嚴密水電管制。", h: "左手關皮卡丘(電)，右手關傑尼龜(水)。" },
+            { type: "safety", cat: "安官守則", id: 4, q: "第 4 條", a: "清查就寢人數。", h: "拿牧羊杖去寢室<span class='highlight'>數羊</span>(就寢人數)。" },
+            { type: "safety", cat: "安官守則", id: 5, q: "第 5 條", a: "巡視衛哨勤務。", h: "拿望遠鏡偷看門口<span class='highlight'>衛哨</span>有沒有偷睡覺。" },
+            { type: "safety", cat: "安官守則", id: 6, q: "第 6 條", a: "注意可疑人物。", h: "桌底鑽出一個<span class='highlight'>忍者</span>(可疑人物)。" },
+            { type: "safety", cat: "安官守則", id: 7, q: "第 7 條", a: "接聽戰情電話。", h: "電話響像空襲警報，嚇到站起來接<span class='highlight'>戰情</span>。" },
+            { type: "safety", cat: "安官守則", id: 8, q: "第 8 條", a: "反映緊急事故。", h: "失火了！快按桌上紅色的<span class='highlight'>SOS按鈕</span>。" },
 
-            // 用槍時機 (長條文)
-            { cat: "用槍時機", id: 1, q: "生命身體受暴行脅迫時...", a: "生命身體受暴行脅迫，非使用武器不能抵抗或自衛時。", h: "口訣：<span class='highlight'>殭屍勒脖</span>！不開槍會死。(抵抗、自衛)" },
-            { cat: "用槍時機", id: 2, q: "群眾暴動時...", a: "群眾暴動，非使用武器不能制止時。", h: "口訣：<span class='highlight'>暴民推牆</span>！一萬人衝過來。(群眾暴動、制止)" },
-            { cat: "用槍時機", id: 3, q: "所警衛之人員物資受危害時...", a: "所警衛之人員、物資、車船、航空器受危害脅迫時，非使用武器不能保護時。", h: "口訣：<span class='highlight'>小偷搶飛機</span>！保護你的車船航空器。(人員物資、保護)" },
-            { cat: "用槍時機", id: 4, q: "防衛駐所受襲擾時...", a: "因防衛駐所之土地、場所 、建築物受襲擾或擅闖，經警告仍不聽從，非使用武器而不能制止時。", h: "口訣：<span class='highlight'>強闖營區</span>！警告不聽就開槍。(土地場所建築物、擅闖、制止)" },
-            { cat: "用槍時機", id: 5, q: "要犯逃脫時...", a: "要犯逃脫，非使用武器不能制止時。", h: "口訣：<span class='highlight'>犯人跑了</span>！解開手銬跑了。(要犯逃脫、制止)" },
+            // 用槍時機 (type: timing)
+            { type: "timing", cat: "用槍時機", id: 1, q: "生命身體受暴行脅迫時...", a: "生命身體受暴行脅迫，非使用武器不能抵抗或自衛時。", h: "口訣：<span class='highlight'>殭屍勒脖</span>！不開槍會死。" },
+            { type: "timing", cat: "用槍時機", id: 2, q: "群眾暴動時...", a: "群眾暴動，非使用武器不能制止時。", h: "口訣：<span class='highlight'>暴民推牆</span>！一萬人衝過來。" },
+            { type: "timing", cat: "用槍時機", id: 3, q: "所警衛之人員物資受危害時...", a: "所警衛之人員、物資、車船、航空器受危害脅迫時，非使用武器不能保護時。", h: "口訣：<span class='highlight'>小偷搶飛機</span>！保護你的車船航空器。" },
+            { type: "timing", cat: "用槍時機", id: 4, q: "防衛駐所受襲擾時...", a: "因防衛駐所之土地、場所 、建築物受襲擾或擅闖，經警告仍不聽從，非使用武器而不能制止時。", h: "口訣：<span class='highlight'>強闖營區</span>！警告不聽就開槍。" },
+            { type: "timing", cat: "用槍時機", id: 5, q: "要犯逃脫時...", a: "要犯逃脫，非使用武器不能制止時。", h: "口訣：<span class='highlight'>犯人跑了</span>！解開手銬跑了。" },
 
-            // 用槍要領
-            { cat: "用槍要領", id: 1, q: "如非情勢異常急迫...", a: "如非情勢異常急迫，應先口頭警告並對空鳴槍警告之。", h: "牛仔 SOP：先大喊 Freeze (口頭)，再朝天空開槍 (鳴槍)。" },
-            { cat: "用槍要領", id: 2, q: "經警告已有畏服...", a: "經警告已有畏服之情況時應立即停止使用。", h: "壞人跪地求饒(畏服)了，馬上收槍(停止)。" },
-            { cat: "用槍要領", id: 3, q: "使用武器應注意...", a: "使用武器應注意，勿傷及他人。", h: "子彈要會轉彎，閃過路邊賣花的阿嬤(勿傷他人)。" },
-            { cat: "用槍要領", id: 4, q: "如非情勢確有必要...", a: "如非情勢確有必要應儘量避免傷及其致命部位。", h: "真的要打只打<span class='highlight'>小腿</span>，不要爆頭(致命部位)。" },
-            { cat: "用槍要領", id: 5, q: "使用武器後...", a: "使用武器後，應將經過情形即時報告該管長官。", h: "打完收工，拿無線電跟長官<span class='highlight'>報告</span>。" }
+            // 用槍要領 (type: guide)
+            { type: "guide", cat: "用槍要領", id: 1, q: "如非情勢異常急迫...", a: "如非情勢異常急迫，應先口頭警告並對空鳴槍警告之。", h: "牛仔 SOP：先大喊 Freeze (口頭)，再朝天空開槍 (鳴槍)。" },
+            { type: "guide", cat: "用槍要領", id: 2, q: "經警告已有畏服...", a: "經警告已有畏服之情況時應立即停止使用。", h: "壞人跪地求饒(畏服)了，馬上收槍(停止)。" },
+            { type: "guide", cat: "用槍要領", id: 3, q: "使用武器應注意...", a: "使用武器應注意，勿傷及他人。", h: "子彈要會轉彎，閃過路邊賣花的阿嬤(勿傷他人)。" },
+            { type: "guide", cat: "用槍要領", id: 4, q: "如非情勢確有必要...", a: "如非情勢確有必要應儘量避免傷及其致命部位。", h: "真的要打只打<span class='highlight'>小腿</span>，不要爆頭(致命部位)。" },
+            { type: "guide", cat: "用槍要領", id: 5, q: "使用武器後...", a: "使用武器後，應將經過情形即時報告該管長官。", h: "打完收工，拿無線電跟長官<span class='highlight'>報告</span>。" }
         ];
 
-        // 系統變數
-        let examList = [];
+        // 全域變數
+        let currentExamList = [];
         let currIdx = 0;
         let score = 0;
-        let userInputs = {}; // 紀錄每一題的作答
-        let isReviewed = {}; // 紀錄每一題是否已經送出檢查過
+        let userInputs = {};
+        let isReviewed = {};
+        let currentMode = ''; // 紀錄當前模式以便重來 (sentry, all, etc)
 
-        // 初始化
-        function initGame() {
-            // 洗牌
-            examList = [...database].sort(() => Math.random() - 0.5); 
-            // 如果想測驗全部題目，可把 .slice(0, 10) 拿掉，或改成變數
-            examList = examList.slice(0, 10); 
-            
+        // UI 切換邏輯
+        function showView(viewId) {
+            document.querySelectorAll('.container').forEach(el => el.classList.remove('active-view'));
+            document.getElementById(viewId).classList.add('active-view');
+        }
+
+        // 1. 顯示主選單
+        function showMenu() {
+            showView('menu-interface');
+        }
+
+        // 2. 開始測驗 (入口)
+        function startQuiz(mode) {
+            currentMode = mode;
+            let pool = [];
+
+            if (mode === 'all') {
+                pool = [...database];
+                pool.sort(() => Math.random() - 0.5);
+                currentExamList = pool.slice(0, 10); // 隨機 10 題
+            } else {
+                // 篩選特定單元
+                pool = database.filter(item => item.type === mode);
+                // 單元測驗不一定要隨機，依序比較好背，或是隨機也可。這裡設為依序。
+                // 如果想隨機，解開下面註解
+                // pool.sort(() => Math.random() - 0.5);
+                currentExamList = pool;
+            }
+
+            // 初始化狀態
             currIdx = 0;
             score = 0;
             userInputs = {};
             isReviewed = {};
-            
+
+            showView('quiz-interface');
             renderQuestion();
         }
 
+        // 3. 重新開始當前測驗
+        function restartCurrentQuiz() {
+            startQuiz(currentMode);
+        }
+
+        // 4. 中途退出確認
+        function confirmExit() {
+            if (confirm("確定要中斷測驗回到主選單嗎？\n(目前的進度將會消失)")) {
+                showMenu();
+            }
+        }
+
+        // 渲染題目 (同 v1.0 邏輯)
         function renderQuestion() {
-            const q = examList[currIdx];
+            const q = currentExamList[currIdx];
             
-            // 更新 UI
-            document.getElementById('progress-disp').innerText = `${currIdx + 1} / ${examList.length}`;
+            // UI 更新
+            document.getElementById('progress-disp').innerText = `${currIdx + 1} / ${currentExamList.length}`;
             document.getElementById('score-disp').innerText = `得分: ${score}`;
             document.getElementById('q-category').innerText = q.cat;
             
-            // 對於"用槍時機"這種長題目，顯示開頭提示
             let qTextDisplay = q.q;
             if(q.cat.includes("用槍")) {
                 qTextDisplay += " (請接續)";
             }
             document.getElementById('q-text').innerText = qTextDisplay;
 
-            // 輸入框狀態
             const input = document.getElementById('user-input');
             input.value = userInputs[currIdx] || "";
-            
-            // 重置回饋區
             document.getElementById('feedback-ui').style.display = 'none';
-            input.className = ""; // 移除紅綠框
+            input.className = "";
             input.disabled = false;
 
-            // 如果這題已經檢查過，要恢復顯示回饋
             if (isReviewed[currIdx]) {
-                showFeedback(true); // 傳入 true 代表是「重繪」而非「新計算」
+                showFeedback(true);
             } else {
-                // 新題目狀態
                 const btnAction = document.getElementById('btn-action');
                 btnAction.innerHTML = "送出檢查 (Enter)";
                 btnAction.className = "btn btn-check";
                 btnAction.onclick = submitCheck;
-                setTimeout(() => input.focus(), 50); // 自動聚焦
+                btnAction.style.display = "flex"; // 確保顯示
+                setTimeout(() => input.focus(), 50);
             }
 
-            // 返回按鈕
             document.getElementById('btn-back').disabled = (currIdx === 0);
         }
 
@@ -356,43 +427,38 @@
             const val = input.value.trim();
             
             if (!val) {
-                // 搖晃動畫
                 input.style.transform = "translateX(5px)";
                 setTimeout(() => input.style.transform = "translateX(0)", 100);
                 return;
             }
 
-            // 儲存答案
             userInputs[currIdx] = val;
-            
-            // 標記已檢查
             isReviewed[currIdx] = true;
 
-            // 計算分數 (只在第一次檢查時計算，避免重複加分)
-            // 這裡邏輯簡化：只要進到 submitCheck 就代表是第一次送出
-            // 為了防止回上一題重複刷分，我們應該在 isReviewed 判斷
-            
-            const q = examList[currIdx];
-            // 模糊比對：移除所有標點符號與空白，只比對中文字與數字
+            const q = currentExamList[currIdx];
+            // 模糊比對
             const cleanUser = val.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
             const cleanAns = q.a.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
-            
             const isCorrect = (cleanUser === cleanAns);
 
+            // 分數計算：每題配分 = 100 / 總題數
+            // 為了顯示整數，用 Math.round
             if (isCorrect) {
-                score += 10;
-                document.getElementById('score-disp').innerText = `得分: ${score}`;
+                const pointsPerQ = 100 / currentExamList.length;
+                score += pointsPerQ;
             }
+
+            // 更新分數顯示 (取整數)
+            document.getElementById('score-disp').innerText = `得分: ${Math.round(score)}`;
 
             showFeedback(false, isCorrect);
         }
 
         function showFeedback(isRedraw, passedIsCorrect) {
             const input = document.getElementById('user-input');
-            const q = examList[currIdx];
+            const q = currentExamList[currIdx];
             const val = userInputs[currIdx];
             
-            // 重新計算正確性 (如果是重繪)
             let isCorrect = passedIsCorrect;
             if (isRedraw) {
                 const cleanUser = val.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
@@ -400,17 +466,15 @@
                 isCorrect = (cleanUser === cleanAns);
             }
 
-            // UI 顯示
             document.getElementById('feedback-ui').style.display = 'block';
-            document.getElementById('correct-ans-text').innerText = q.a; // 顯示含標點的正確答案
+            document.getElementById('correct-ans-text').innerText = q.a;
             document.getElementById('hint-text').innerHTML = q.h;
 
-            input.disabled = true; // 鎖定輸入
+            input.disabled = true;
 
             if (isCorrect) {
                 input.className = "correct-state";
-                document.getElementById('user-row').style.display = 'none'; // 答對就不顯示錯誤對照
-                // 可以在這裡顯示一個「完全正確」的標示
+                document.getElementById('user-row').style.display = 'none';
                 document.getElementById('comparison-box').style.borderColor = "#27ae60";
                 document.getElementById('comparison-box').style.background = "#f0fdf4";
             } else {
@@ -421,18 +485,15 @@
                 document.getElementById('comparison-box').style.background = "#fef2f2";
             }
 
-            // 更新按鈕
             const btnAction = document.getElementById('btn-action');
-            if (currIdx < examList.length - 1) {
+            if (currIdx < currentExamList.length - 1) {
                 btnAction.innerHTML = "下一題 ➔";
                 btnAction.className = "btn btn-next";
-                btnAction.style.display = "flex";
                 btnAction.onclick = nextQ;
-                btnAction.focus(); // 方便連按
+                btnAction.focus();
             } else {
                 btnAction.innerHTML = "查看成績單 📝";
                 btnAction.className = "btn btn-next";
-                btnAction.style.display = "flex";
                 btnAction.onclick = showResult;
                 btnAction.focus();
             }
@@ -451,31 +512,31 @@
         }
 
         function showResult() {
-            document.getElementById('quiz-interface').style.display = 'none';
-            document.getElementById('result-interface').style.display = 'block';
-            document.getElementById('final-score-val').innerText = score;
+            showView('result-interface');
+            const finalScore = Math.round(score);
+            document.getElementById('final-score-val').innerText = finalScore;
             
             let comment = "";
-            if (score === 100) comment = "🏆 完美！標點符號都難不倒你！";
-            else if (score >= 80) comment = "😎 優秀！有些小細節再注意一下就好。";
-            else if (score >= 60) comment = "🙂 及格！口訣多唸幾次會更熟。";
+            if (finalScore === 100) comment = "🏆 完美！標點符號都難不倒你！";
+            else if (finalScore >= 80) comment = "😎 優秀！有些小細節再注意一下就好。";
+            else if (finalScore >= 60) comment = "🙂 及格！口訣多唸幾次會更熟。";
             else comment = "💀 不及格！今晚罰寫十遍！";
             
             document.getElementById('final-comment').innerText = comment;
         }
 
-        // 鍵盤監聽
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                // 觸發當前主要按鈕
-                const btn = document.getElementById('btn-action');
-                if (!btn.disabled) btn.click();
+                // 檢查當前是在哪個畫面，如果在 quiz 畫面且按鈕可按
+                if (document.getElementById('quiz-interface').classList.contains('active-view')) {
+                    const btn = document.getElementById('btn-action');
+                    if (btn && !btn.disabled && btn.style.display !== 'none') {
+                        btn.click();
+                    }
+                }
             }
         });
-
-        // 啟動
-        initGame();
 
     </script>
 </body>
