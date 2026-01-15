@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>軍事準則 - 全真模擬鑑測系統</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #34495e;
+            --accent: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* 頂部導航 */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .brand {
+            font-size: 1.2rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .timer-box {
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: none; /* 考試開始才顯示 */
+        }
+
+        .timer-box.urgent {
+            background-color: var(--accent);
+            animation: pulse 1s infinite;
+        }
+
+        /* 主要容器 */
+        main {
+            flex: 1;
+            max-width: 800px;
+            margin: 20px auto;
+            width: 95%;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            position: relative;
+        }
+
+        /* 歡迎/開始畫面 */
+        .screen {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+
+        h2 { border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-top: 0; }
+        
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: bold;
+        }
+
+        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-lg { width: 100%; margin-top: 20px; font-size: 1.1rem; }
+        .btn-secondary { background-color: #95a5a6; }
+
+        /* 考試介面 */
+        .progress-bar {
+            height: 6px;
+            background: #eee;
+            margin-bottom: 20px;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-card {
+            margin-bottom: 20px;
+        }
+
+        .q-tag {
+            background: var(--light);
+            color: var(--secondary);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .q-text {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            padding: 15px;
+            font-size: 1.1rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            resize: none;
+            box-sizing: border-box;
+            transition: 0.3s;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        /* 結果頁面 */
+        .score-display {
+            text-align: center;
+            padding: 30px;
+            background: var(--light);
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .final-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .score-label { color: #7f8c8d; }
+
+        .review-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .review-q { font-weight: bold; color: #555; margin-bottom: 5px; }
+        
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+
+        .user-ans { color: var(--accent); background: #fdeaea; padding: 8px; border-radius: 4px; }
+        .correct-ans { color: var(--success); background: #eafaf1; padding: 8px; border-radius: 4px; }
+        
+        .memory-tip {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #d35400;
+            background: #fff5e6;
+            padding: 5px 10px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .status-badge {
+            float: right;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: white;
+        }
+        .bg-perfect { background-color: var(--success); }
+        .bg-ok { background-color: var(--warning); }
+        .bg-fail { background-color: var(--accent); }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 600px) {
+            .comparison { grid-template-columns: 1fr; }
+            main { padding: 20px; width: 90%; }
+            .final-score { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">🛡️ 準則鑑測中心</div>
+        <div class="timer-box" id="timer">10:00</div>
+    </header>
+
+    <main>
+        <!-- 1. 開始畫面 -->
+        <div id="screen-start" class="screen active">
+            <h2>考試規則說明</h2>
+            <p>歡迎進入模擬鑑測系統，請閱讀以下規則：</p>
+            <ul>
+                <li><strong>考試時間：</strong>10 分鐘。</li>
+                <li><strong>評分標準：</strong>系統將自動比對關鍵字與完整度。錯字或漏字會依比例扣分。</li>
+                <li><strong>題型：</strong>包含填空與簡答，請憑記憶盡量輸入完整條文。</li>
+            </ul>
+            
+            <div style="margin: 20px 0; background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                <label><strong>選擇考題範圍：</strong></label>
+                <select id="exam-scope" style="padding: 8px; width: 100%; margin-top: 10px;">
+                    <option value="all">全部混和 (隨機 10 題)</option>
+                    <option value="sentry">僅測驗：衛哨守則 (8題)</option>
+                    <option value="safety">僅測驗：安官守則 (8題)</option>
+                    <option value="gun">僅測驗：用槍時機與要領 (10題)</option>
+                </select>
+            </div>
+
+            <button class="btn btn-lg" onclick="startExam()">開始測驗</button>
+        </div>
+
+        <!-- 2. 考試畫面 -->
+        <div id="screen-exam" class="screen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            
+            <div class="question-card">
+                <span class="q-tag" id="q-category">類別</span>
+                <div class="q-text" id="q-text">題目內容載入中...</div>
+                <textarea id="user-input" placeholder="請在此輸入條文內容..." onkeydown="handleEnter(event)"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: space-between;">
+                <span style="color: #999; font-size: 0.9rem;">按 Enter 鍵也可送出</span>
+                <button class="btn" onclick="submitAnswer()">下一題 ➔</button>
+            </div>
+        </div>
+
+        <!-- 3. 結果畫面 -->
+        <div id="screen-result" class="screen">
+            <h2>測驗成績單</h2>
+            
+            <div class="score-display">
+                <div class="final-score" id="final-score">0</div>
+                <div class="score-label">總分 (滿分 100)</div>
+                <div id="comment" style="margin-top: 10px; font-weight: bold; color: var(--primary);"></div>
+            </div>
+
+            <h3>詳細檢討</h3>
+            <div id="review-list">
+                <!-- 檢討內容由 JS 生成 -->
+            </div>
+
+            <button class="btn btn-lg" onclick="location.reload()">重新測驗</button>
+        </div>
+    </main>
+
+    <script>
+        // 資料庫
+        const fullDB = [
+            { cat: "衛哨守則", id: 1, q: "第 1 條", a: "服裝整齊配件光亮", h: "鑽石衣、鏡子腰帶" },
+            { cat: "衛哨守則", id: 2, q: "第 2 條", a: "精神飽滿姿態端正", h: "鋼板背、蠻牛眼" },
+            { cat: "衛哨守則", id: 3, q: "第 3 條", a: "械彈攜帶確遵規定", h: "手銬槍、藍波彈" },
+            { cat: "衛哨守則", id: 4, q: "第 4 條", a: "堅守崗位嚴密搜查", h: "三秒膠腳、放大鏡" },
+            { cat: "衛哨守則", id: 5, q: "第 5 條", a: "提高警覺時時戒備", h: "雷達頭、警示燈" },
+            { cat: "衛哨守則", id: 6, q: "第 6 條", a: "不看熱鬧注意可疑", h: "不看辣妹、盯黑衣人" },
+            { cat: "衛哨守則", id: 7, q: "第 7 條", a: "服勤認真說話客氣", h: "空姐笑、認真臉" },
+            { cat: "衛哨守則", id: 8, q: "第 8 條", a: "嚴格管制仔細查驗", h: "大柵欄、顯微鏡" },
+            
+            { cat: "安官守則", id: 1, q: "第 1 條", a: "負責單位安全", h: "抱著保險箱" },
+            { cat: "安官守則", id: 2, q: "第 2 條", a: "械彈清點管制", h: "數子彈" },
+            { cat: "安官守則", id: 3, q: "第 3 條", a: "嚴密水電管制", h: "關皮卡丘、關傑尼龜" },
+            { cat: "安官守則", id: 4, q: "第 4 條", a: "清查就寢人數", h: "牧羊人數羊" },
+            { cat: "安官守則", id: 5, q: "第 5 條", a: "巡視衛哨勤務", h: "望遠鏡看衛兵" },
+            { cat: "安官守則", id: 6, q: "第 6 條", a: "注意可疑人物", h: "抓忍者" },
+            { cat: "安官守則", id: 7, q: "第 7 條", a: "接聽戰情電話", h: "警報電話" },
+            { cat: "安官守則", id: 8, q: "第 8 條", a: "反映緊急事故", h: "SOS按鈕" },
+
+            { cat: "用槍時機", id: 1, q: "生命身體受暴行脅迫時...", a: "生命身體受暴行脅迫，非使用武器不能抵抗或自衛時", h: "抵抗、自衛" },
+            { cat: "用槍時機", id: 2, q: "群眾暴動時...", a: "群眾暴動，非使用武器不能制止時", h: "群眾暴動、制止" },
+            { cat: "用槍時機", id: 3, q: "所警衛之人員物資受危害時...", a: "所警衛之人員物資車船航空器受危害脅迫時，非使用武器不能保護時", h: "人員物資車船航空器、保護" },
+            { cat: "用槍時機", id: 4, q: "防衛駐所受襲擾時...", a: "因防衛駐所之土地場所建築物受襲擾或擅闖，經警告仍不聽從，非使用武器而不能制止時", h: "土地場所建築物、襲擾擅闖、不聽從" },
+            { cat: "用槍時機", id: 5, q: "要犯逃脫時...", a: "要犯逃脫，非使用武器不能制止時", h: "要犯逃脫、制止" },
+
+            { cat: "用槍要領", id: 1, q: "如非情勢異常急迫...", a: "如非情勢異常急迫應先口頭警告並對空鳴槍警告之", h: "口頭警告、對空鳴槍" },
+            { cat: "用槍要領", id: 2, q: "經警告已有畏服...", a: "經警告已有畏服之情況時應立即停止使用", h: "畏服、停止使用" },
+            { cat: "用槍要領", id: 3, q: "使用武器應注意...", a: "使用武器應注意勿傷及他人", h: "勿傷及他人" },
+            { cat: "用槍要領", id: 4, q: "如非情勢確有必要...", a: "如非情勢確有必要應儘量避免傷及其致命部位", h: "避免傷及致命部位" },
+            { cat: "用槍要領", id: 5, q: "使用武器後...", a: "使用武器後應將經過情形即時報告該管長官", h: "報告長官" }
+        ];
+
+        let currentExam = [];
+        let currentIndex = 0;
+        let userAnswers = [];
+        let timerInterval;
+        let timeLeft = 600; // 10分鐘
+
+        // 洗牌演算法
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 開始考試
+        function startExam() {
+            const scope = document.getElementById('exam-scope').value;
+            let pool = [];
+
+            if (scope === 'all') {
+                pool = [...fullDB];
+                shuffle(pool);
+                currentExam = pool.slice(0, 10); // 隨機 10 題
+            } else if (scope === 'sentry') {
+                currentExam = fullDB.filter(x => x.cat === "衛哨守則");
+            } else if (scope === 'safety') {
+                currentExam = fullDB.filter(x => x.cat === "安官守則");
+            } else {
+                currentExam = fullDB.filter(x => x.cat.includes("用槍"));
+            }
+
+            currentIndex = 0;
+            userAnswers = [];
+            
+            document.getElementById('screen-start').classList.remove('active');
+            document.getElementById('screen-exam').classList.add('active');
+            document.querySelector('.timer-box').style.display = 'block';
+
+            startTimer();
+            showQuestion();
+        }
+
+        // 顯示題目
+        function showQuestion() {
+            const q = currentExam[currentIndex];
+            document.getElementById('q-category').innerText = `${q.cat} - 第 ${q.id} 題/點`;
+            
+            // 如果是短題(衛哨/安官)，直接問內容；如果是長題(用槍)，給一點開頭提示
+            if(q.cat.includes("用槍")) {
+                document.getElementById('q-text').innerText = `請接續完成條文：\n「${q.q}」`;
+            } else {
+                document.getElementById('q-text').innerText = `請輸入完整條文內容：`;
+            }
+            
+            document.getElementById('user-input').value = "";
+            document.getElementById('user-input').focus();
+            
+            // 更新進度條
+            const pct = (currentIndex / currentExam.length) * 100;
+            document.getElementById('progress-fill').style.width = `${pct}%`;
+        }
+
+        // 處理 Enter 鍵
+        function handleEnter(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                submitAnswer();
+            }
+        }
+
+        // 提交答案
+        function submitAnswer() {
+            const input = document.getElementById('user-input').value.trim();
+            userAnswers.push(input);
+
+            currentIndex++;
+            if (currentIndex < currentExam.length) {
+                showQuestion();
+            } else {
+                finishExam();
+            }
+        }
+
+        // 計時器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                const display = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                document.getElementById('timer').innerText = display;
+
+                if (timeLeft <= 60) {
+                    document.querySelector('.timer-box').classList.add('urgent');
+                }
+
+                if (timeLeft <= 0) {
+                    finishExam();
+                }
+            }, 1000);
+        }
+
+        // 結束考試與評分
+        function finishExam() {
+            clearInterval(timerInterval);
+            document.getElementById('screen-exam').classList.remove('active');
+            document.getElementById('screen-result').classList.add('active');
+            document.querySelector('.timer-box').style.display = 'none';
+
+            let totalScore = 0;
+            const reviewContainer = document.getElementById('review-list');
+            reviewContainer.innerHTML = '';
+
+            currentExam.forEach((q, idx) => {
+                const userAns = userAnswers[idx] || "";
+                const score = calculateSimilarity(userAns, q.a);
+                totalScore += score;
+
+                // 產生檢討項目
+                let statusClass = score === 100 ? 'bg-perfect' : (score >= 60 ? 'bg-ok' : 'bg-fail');
+                let statusText = score === 100 ? '完美' : (score >= 60 ? '通過' : '錯誤');
+
+                const html = `
+                    <div class="review-item">
+                        <div class="review-q">
+                            ${idx + 1}. ${q.cat} (第${q.id}條)
+                            <span class="status-badge ${statusClass}">${statusText} (${Math.round(score)}%)</span>
+                        </div>
+                        <div class="comparison">
+                            <div class="user-ans">你的答案：${userAns || "(未作答)"}</div>
+                            <div class="correct-ans">正確答案：${q.a}</div>
+                        </div>
+                        ${score < 100 ? `<div class="memory-tip">💡 記憶掛鉤：${q.h}</div>` : ''}
+                    </div>
+                `;
+                reviewContainer.innerHTML += html;
+            });
+
+            const finalAvg = Math.round(totalScore / currentExam.length);
+            document.getElementById('final-score').innerText = finalAvg;
+
+            const commentEl = document.getElementById('comment');
+            if (finalAvg >= 90) commentEl.innerText = "太神了！你是記憶天才！";
+            else if (finalAvg >= 80) commentEl.innerText = "表現優秀，可以去當教官了！";
+            else if (finalAvg >= 60) commentEl.innerText = "勉強及格，細節要再加強。";
+            else commentEl.innerText = "不及格！晚上不用睡了，繼續背！";
+        }
+
+        // 簡單的相似度演算法 (比對字元重疊率)
+        function calculateSimilarity(s1, s2) {
+            // 移除標點與空白
+            const clean1 = s1.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
+            const clean2 = s2.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
+
+            if (!clean1) return 0;
+            if (clean1 === clean2) return 100;
+
+            // 檢查 clean2 (正確答案) 的每個字是否出現在 clean1 (使用者答案) 中
+            let matchCount = 0;
+            let tempUser = clean1;
+            
+            for (let char of clean2) {
+                const idx = tempUser.indexOf(char);
+                if (idx !== -1) {
+                    matchCount++;
+                    // 移除已匹配的字元，避免重複計算
+                    tempUser = tempUser.slice(0, idx) + tempUser.slice(idx + 1);
+                }
+            }
+
+            // 計算分數：匹配字數 / 正確答案總字數
+            // 為了避免使用者亂打很多字來騙分，也要考慮長度差異
+            const lengthPenalty = Math.max(0, clean1.length - clean2.length) * 0.5;
+            
+            let score = (matchCount / clean2.length) * 100 - lengthPenalty;
+            return Math.max(0, Math.min(100, score)); // 限制在 0-100
+        }
+
+    </script>
+</body>
+</html>
+
