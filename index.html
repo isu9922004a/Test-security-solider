@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>軍事準則 - 諧音梗洗腦特訓班</title>
+    <title>軍事準則測驗 v1.0 (標點符號版)</title>
     <style>
         :root {
             --primary: #2c3e50;
-            --accent: #e74c3c;
+            --accent: #c0392b;
             --success: #27ae60;
-            --funny: #f39c12;
+            --highlight: #f39c12;
             --bg: #fdfbf7;
-            --text: #333;
+            --text: #2c3e50;
         }
 
         body {
-            font-family: 'Microsoft JhengHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Microsoft JhengHei", "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg);
             color: var(--text);
             margin: 0;
@@ -32,38 +32,46 @@
             max-width: 650px;
             background: white;
             padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             position: relative;
         }
 
-        /* 頂部狀態 */
-        .status-bar {
+        /* 頂部狀態列 */
+        .header-info {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
-            font-weight: bold;
-            color: #7f8c8d;
-            font-size: 0.9rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
         }
 
-        /* 題目區 */
-        .question-box {
-            margin-bottom: 20px;
+        .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
         }
+        .badge-progress { background: #ecf0f1; color: #7f8c8d; }
+        .badge-score { background: var(--highlight); color: white; }
+
+        /* 題目區 */
+        .q-section { margin-bottom: 15px; }
         
-        .cat-badge {
+        .cat-tag {
             background: var(--primary);
             color: white;
             padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
             display: inline-block;
             margin-bottom: 8px;
+            font-weight: bold;
         }
 
-        .q-text {
-            font-size: 1.3rem;
+        .q-content {
+            font-size: 1.35rem;
             font-weight: 800;
             color: var(--primary);
             line-height: 1.4;
@@ -72,358 +80,387 @@
         /* 輸入區 */
         textarea {
             width: 100%;
-            height: 100px;
+            height: 110px;
             padding: 15px;
-            font-size: 1.2rem;
-            border: 3px solid #eee;
-            border-radius: 10px;
+            font-size: 1.25rem;
+            border: 3px solid #e0e0e0;
+            border-radius: 12px;
             resize: none;
             box-sizing: border-box;
             outline: none;
             background: #fafafa;
-            transition: 0.2s;
+            transition: all 0.2s;
+            color: #333;
         }
 
         textarea:focus {
             border-color: var(--primary);
             background: white;
+            box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.1);
         }
 
-        textarea.error {
-            border-color: var(--accent);
-            background: #fff5f5;
-        }
-
-        textarea.correct {
+        textarea.correct-state {
             border-color: var(--success);
             background: #f0fdf4;
+            color: #166534;
         }
 
-        /* 糾錯與口訣區 (核心功能) */
-        .feedback-panel {
-            display: none;
+        textarea.wrong-state {
+            border-color: var(--accent);
+            background: #fef2f2;
+            color: #991b1b;
+        }
+
+        /* 回饋區 (糾錯+口訣) */
+        .feedback-area {
+            display: none; /* 初始隱藏 */
             margin-top: 20px;
-            animation: slideIn 0.3s ease-out;
+            animation: slideUp 0.3s ease-out;
         }
 
-        .diff-zone {
-            display: grid;
-            gap: 10px;
-            margin-bottom: 15px;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-        }
-
-        .diff-row {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .diff-label {
-            font-size: 0.75rem;
-            color: #999;
-            margin-bottom: 3px;
-        }
-
-        .diff-content {
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
-
-        .user-ans-style { color: var(--accent); text-decoration: line-through; }
-        .correct-ans-style { color: var(--success); }
-
-        /* 諧音梗氣泡 */
-        .funny-bubble {
-            background: #fff8e1;
-            border: 2px dashed var(--funny);
-            padding: 15px;
+        .comparison-box {
+            background: #f8fafc;
             border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .row { display: flex; flex-direction: column; margin-bottom: 10px; }
+        .row:last-child { margin-bottom: 0; }
+        
+        .label { font-size: 0.8rem; color: #64748b; margin-bottom: 4px; font-weight: bold; }
+        .text-val { font-size: 1.1rem; font-weight: bold; line-height: 1.5; }
+        
+        .val-wrong { color: var(--accent); text-decoration: line-through; text-decoration-color: rgba(192, 57, 43, 0.4); }
+        .val-correct { color: var(--success); }
+
+        /* 諧音口訣卡 */
+        .mnemonic-card {
+            background: #fffbeb;
+            border: 2px dashed #fcd34d;
+            border-radius: 10px;
+            padding: 15px;
             position: relative;
-            margin-top: 10px;
         }
 
-        .funny-bubble::before {
-            content: "💡 諧音/聯想口訣：";
-            display: block;
-            font-size: 0.85rem;
-            color: #d35400;
+        .mnemonic-title {
+            color: #d97706;
             font-weight: bold;
+            font-size: 0.9rem;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .funny-text {
+        .mnemonic-content {
             font-size: 1.1rem;
-            color: #2c3e50;
-            font-weight: bold;
+            color: #4b5563;
+            font-weight: 500;
             line-height: 1.5;
         }
+        
+        .highlight { color: #d35400; font-weight: 800; background: rgba(243, 156, 18, 0.15); padding: 0 2px; }
 
-        .highlight {
-            color: #e67e22;
-            font-weight: 900;
-            font-size: 1.2rem;
-        }
-
-        /* 按鈕 */
-        .btn-group {
-            margin-top: 20px;
+        /* 按鈕群 */
+        .controls {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            margin-top: 25px;
         }
 
         .btn {
             flex: 1;
-            padding: 15px;
+            padding: 14px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1rem;
             font-weight: bold;
             cursor: pointer;
+            transition: transform 0.1s;
             color: white;
-            transition: 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .btn:active { transform: scale(0.98); }
-        .btn-submit { background-color: var(--primary); }
-        .btn-back { background-color: #bdc3c7; color: #333; flex: 0.4; } /* 返回上一題 */
+        .btn-check { background-color: var(--primary); }
+        .btn-back { background-color: #95a5a6; flex: 0.3; }
         .btn-next { background-color: var(--success); display: none; }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* 結果畫面 */
+        .result-view { display: none; text-align: center; }
+        .final-score { font-size: 5rem; font-weight: 900; color: var(--primary); line-height: 1; margin: 20px 0; }
+        .result-comment { font-size: 1.3rem; color: #555; margin-bottom: 30px; }
 
-        /* 結算頁 */
-        .result-screen { display: none; text-align: center; }
-        .score-display { font-size: 4rem; color: var(--primary); font-weight: 800; }
-        .cheer-text { font-size: 1.2rem; margin-top: 10px; color: #555; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     </style>
 </head>
 <body>
 
-    <div class="container" id="quiz-ui">
-        <div class="status-bar">
-            <span id="progress-text">第 1 / 10 題</span>
-            <span id="score-text">得分: 0</span>
+    <!-- 測驗介面 -->
+    <div class="container" id="quiz-interface">
+        <div class="header-info">
+            <span class="badge badge-progress" id="progress-disp">1 / 10</span>
+            <span class="badge badge-score" id="score-disp">得分: 0</span>
         </div>
 
-        <div class="question-box">
-            <span class="cat-badge" id="q-cat">衛哨守則</span>
-            <div class="q-text" id="q-body">第 1 條</div>
+        <div class="q-section">
+            <span class="cat-tag" id="q-category">衛哨守則</span>
+            <div class="q-content" id="q-text">第 1 條</div>
         </div>
 
-        <textarea id="input-area" placeholder="請輸入條文..." spellcheck="false"></textarea>
+        <textarea id="user-input" placeholder="請輸入條文..." spellcheck="false" autocomplete="off"></textarea>
 
-        <!-- 糾錯回饋區 -->
-        <div class="feedback-panel" id="feedback">
-            <!-- 比對區 -->
-            <div class="diff-zone" id="diff-area" style="display:none;">
-                <div class="diff-row">
-                    <span class="diff-label">❌ 你的答案：</span>
-                    <span class="diff-content user-ans-style" id="user-ans-disp"></span>
+        <!-- 回饋區 -->
+        <div class="feedback-area" id="feedback-ui">
+            <!-- 比對區：答錯才詳細顯示，答對顯示恭喜 -->
+            <div class="comparison-box" id="comparison-box">
+                <div class="row" id="user-row">
+                    <span class="label">❌ 您的答案：</span>
+                    <span class="text-val val-wrong" id="user-ans-text"></span>
                 </div>
-                <div class="diff-row" style="margin-top:10px;">
-                    <span class="diff-label">✅ 正確條文：</span>
-                    <span class="diff-content correct-ans-style" id="correct-ans-disp"></span>
+                <div class="row">
+                    <span class="label">✅ 正確條文 (含標點)：</span>
+                    <span class="text-val val-correct" id="correct-ans-text"></span>
                 </div>
             </div>
-            
-            <!-- 答對時只顯示這個 -->
-            <div class="diff-zone" id="correct-msg" style="display:none; background:#f0fdf4; border:1px solid #bbf7d0;">
-                <span style="color:var(--success); font-weight:bold; text-align:center;">🎉 太神啦！完全正確！</span>
-            </div>
 
-            <!-- 諧音口訣 -->
-            <div class="funny-bubble">
-                <div class="funny-text" id="funny-hint"></div>
+            <!-- 諧音提示 -->
+            <div class="mnemonic-card">
+                <div class="mnemonic-title">💡 腦內諧音口訣</div>
+                <div class="mnemonic-content" id="hint-text"></div>
             </div>
         </div>
 
-        <div class="btn-group">
-            <button class="btn btn-back" onclick="prevQ()" id="btn-back" disabled>⬅ 上一題</button>
-            <button class="btn btn-submit" onclick="checkAnswer()" id="btn-action">送出檢查 (Enter)</button>
+        <div class="controls">
+            <button class="btn btn-back" id="btn-back" onclick="goBack()" disabled>⬅</button>
+            <button class="btn btn-check" id="btn-action" onclick="submitCheck()">送出檢查 (Enter)</button>
         </div>
     </div>
 
     <!-- 結算畫面 -->
-    <div class="container result-screen" id="result-ui">
-        <h2>🎖️ 鑑測成績單</h2>
-        <div class="score-display" id="final-score">0</div>
-        <div class="cheer-text" id="final-comment"></div>
-        <button class="btn btn-submit" onclick="location.reload()" style="margin-top:20px;">再玩一次</button>
+    <div class="container result-view" id="result-interface">
+        <h2 style="color:var(--primary); margin-bottom:0;">鑑測成績單</h2>
+        <div style="font-size:0.9rem; color:#999; margin-bottom:10px;">v1.0 標點符號版</div>
+        <div class="final-score" id="final-score-val">0</div>
+        <div class="result-comment" id="final-comment"></div>
+        <button class="btn btn-check" onclick="location.reload()" style="width:100%;">重新挑戰</button>
     </div>
 
     <script>
-        // 資料庫：諧音口訣加強版
-        const db = [
-            // 衛哨
-            { cat: "衛哨守則", id: 1, q: "第 1 條", a: "服裝整齊配件光亮", h: "想像你是鋼鐵人，<span class='highlight'>服裝</span>是鑽石做的，<span class='highlight'>配件</span>亮到像鏡子！(富狀、配劍)" },
-            { cat: "衛哨守則", id: 2, q: "第 2 條", a: "精神飽滿姿態端正", h: "喝了10瓶蠻牛<span class='highlight'>精神</span>爆炸，背後插鋼板<span class='highlight'>姿態</span>只能端正！(金身、端正)" },
-            { cat: "衛哨守則", id: 3, q: "第 3 條", a: "械彈攜帶確遵規定", h: "<span class='highlight'>械彈</span>帶不好就完蛋（確遵規定），請想像把蛋蛋綁在槍上（攜帶）。" },
-            { cat: "衛哨守則", id: 4, q: "第 4 條", a: "堅守崗位嚴密搜查", h: "腳底抹三秒膠<span class='highlight'>堅守</span>地板，拿放大鏡<span class='highlight'>搜查</span>螞蟻！(監守、搜查)" },
-            { cat: "衛哨守則", id: 5, q: "第 5 條", a: "提高警覺時時戒備", h: "頭上裝雷達<span class='highlight'>警覺</span>，手上拿電擊棒<span class='highlight'>戒備</span>！(警犬、戒備)" },
-            { cat: "衛哨守則", id: 6, q: "第 6 條", a: "不看熱鬧注意可疑", h: "旁邊有辣妹跳舞（熱鬧）我<span class='highlight'>不看</span>，只盯著那個<span class='highlight'>可疑</span>的阿伯。" },
-            { cat: "衛哨守則", id: 7, q: "第 7 條", a: "服勤認真說話客氣", h: "雖然拿槍很殺，但對人要像空服員一樣<span class='highlight'>客氣</span>：先生歡迎登機～" },
-            { cat: "衛哨守則", id: 8, q: "第 8 條", a: "嚴格管制仔細查驗", h: "放下大鐵門<span class='highlight'>管制</span>，拿顯微鏡<span class='highlight'>查驗</span>證件上的細菌！(管子、查驗)" },
+        // v1.0 資料庫：含標點符號正確版
+        const database = [
+            // 衛哨守則
+            { cat: "衛哨守則", id: 1, q: "第 1 條", a: "服裝整齊、配件光亮。", h: "鋼鐵人<span class='highlight'>服裝</span>是鑽石，<span class='highlight'>配件</span>是鏡子。(整齊、光亮)" },
+            { cat: "衛哨守則", id: 2, q: "第 2 條", a: "精神飽滿、姿態端正。", h: "喝蠻牛<span class='highlight'>精神</span>好，背插鋼板<span class='highlight'>姿態</span>正。(飽滿、端正)" },
+            { cat: "衛哨守則", id: 3, q: "第 3 條", a: "械彈攜帶、確遵規定。", h: "<span class='highlight'>械彈</span>帶不好就完蛋，請把蛋蛋綁在槍上。(攜帶、規定)" },
+            { cat: "衛哨守則", id: 4, q: "第 4 條", a: "堅守崗位、嚴密搜查。", h: "腳踩三秒膠<span class='highlight'>堅守</span>，拿放大鏡<span class='highlight'>搜查</span>螞蟻。(崗位、搜查)" },
+            { cat: "衛哨守則", id: 5, q: "第 5 條", a: "提高警覺、時時戒備。", h: "頭裝雷達<span class='highlight'>警覺</span>，手拿電擊棒<span class='highlight'>戒備</span>。(警覺、戒備)" },
+            { cat: "衛哨守則", id: 6, q: "第 6 條", a: "不看熱鬧、注意可疑。", h: "辣妹跳舞<span class='highlight'>不看</span>(熱鬧)，只盯著<span class='highlight'>可疑</span>阿伯。(熱鬧、可疑)" },
+            { cat: "衛哨守則", id: 7, q: "第 7 條", a: "服勤認真、說話客氣。", h: "殺氣騰騰但對人<span class='highlight'>客氣</span>，像空姐一樣。(認真、客氣)" },
+            { cat: "衛哨守則", id: 8, q: "第 8 條", a: "嚴格管制、仔細查驗。", h: "放下鐵門<span class='highlight'>管制</span>，用顯微鏡<span class='highlight'>查驗</span>細菌。(嚴格、仔細)" },
 
-            // 安官
-            { cat: "安官守則", id: 1, q: "第 1 條", a: "負責單位安全", h: "安官桌抱著一個巨大的<span class='highlight'>保險箱</span>，裡面裝著全單位的安全。" },
-            { cat: "安官守則", id: 2, q: "第 2 條", a: "械彈清點管制", h: "<span class='highlight'>械彈</span>算錯了就要「切蛋」（清點管制），數清楚啊！" },
-            { cat: "安官守則", id: 3, q: "第 3 條", a: "嚴密水電管制", h: "左手關皮卡丘(電)，右手關傑尼龜(水)，沒關好就沒<span class='highlight'>睡墊</span>(水電)。" },
-            { cat: "安官守則", id: 4, q: "第 4 條", a: "清查就寢人數", h: "拿著牧羊杖去寢室<span class='highlight'>數羊</span>（人數），看誰還沒睡！" },
-            { cat: "安官守則", id: 5, q: "第 5 條", a: "巡視衛哨勤務", h: "沒事找事做（巡視），拿望遠鏡偷看<span class='highlight'>衛哨</span>有沒有偷睡覺。" },
-            { cat: "安官守則", id: 6, q: "第 6 條", a: "注意可疑人物", h: "桌子底下鑽出一個<span class='highlight'>忍者</span>（可疑人物），抓到你了！" },
-            { cat: "安官守則", id: 7, q: "第 7 條", a: "接聽戰情電話", h: "電話一響嚇到<span class='highlight'>站起</span>（戰情），聲音像空襲警報！" },
-            { cat: "安官守則", id: 8, q: "第 8 條", a: "反映緊急事故", h: "火燒屁股了（緊急）！快按桌上那個紅色的<span class='highlight'>SOS按鈕</span>（反映）！" },
+            // 安官守則
+            { cat: "安官守則", id: 1, q: "第 1 條", a: "負責單位安全。", h: "抱著巨大的<span class='highlight'>保險箱</span>(單位安全)不放。" },
+            { cat: "安官守則", id: 2, q: "第 2 條", a: "械彈清點管制。", h: "像數鈔票一樣<span class='highlight'>數子彈</span>，少一顆就切蛋(清點)。" },
+            { cat: "安官守則", id: 3, q: "第 3 條", a: "嚴密水電管制。", h: "左手關皮卡丘(電)，右手關傑尼龜(水)，嚴密<span class='highlight'>水電</span>。" },
+            { cat: "安官守則", id: 4, q: "第 4 條", a: "清查就寢人數。", h: "拿牧羊杖去寢室<span class='highlight'>數羊</span>(就寢人數)。" },
+            { cat: "安官守則", id: 5, q: "第 5 條", a: "巡視衛哨勤務。", h: "拿望遠鏡偷看門口<span class='highlight'>衛哨</span>有沒有偷睡覺(巡視)。" },
+            { cat: "安官守則", id: 6, q: "第 6 條", a: "注意可疑人物。", h: "桌底鑽出一個<span class='highlight'>忍者</span>(可疑人物)。" },
+            { cat: "安官守則", id: 7, q: "第 7 條", a: "接聽戰情電話。", h: "電話響像空襲警報，嚇到站起來接<span class='highlight'>戰情</span>。" },
+            { cat: "安官守則", id: 8, q: "第 8 條", a: "反映緊急事故。", h: "失火了(緊急)！快按桌上紅色的<span class='highlight'>SOS按鈕</span>(反映)。" },
 
-            // 用槍 - 針對長條文簡化口訣
-            { cat: "用槍時機", id: 1, q: "生命身體受暴行脅迫時...", a: "生命身體受暴行脅迫，非使用武器不能抵抗或自衛時", h: "口訣：<span class='highlight'>殭屍勒脖</span>！(抵抗、自衛)。不開槍就會被殭屍咬死，這是保命！" },
-            { cat: "用槍時機", id: 2, q: "群眾暴動時...", a: "群眾暴動，非使用武器不能制止時", h: "口訣：<span class='highlight'>暴民推牆</span>！一萬個暴民衝過來，不開槍擋不住！" },
-            { cat: "用槍時機", id: 3, q: "所警衛之人員物資受危害時...", a: "所警衛之人員物資車船航空器受危害脅迫時，非使用武器不能保護時", h: "口訣：<span class='highlight'>小偷搶飛機</span>！(人員物資車船航空器)。你的裝備被搶了，快保護它！" },
-            { cat: "用槍時機", id: 4, q: "防衛駐所受襲擾時...", a: "因防衛駐所之土地場所建築物受襲擾或擅闖，經警告仍不聽從，非使用武器而不能制止時", h: "口訣：<span class='highlight'>強闖營區</span>！(土地場所建築物)。這裡是我的地盤，警告不聽就開槍！" },
-            { cat: "用槍時機", id: 5, q: "要犯逃脫時...", a: "要犯逃脫，非使用武器不能制止時", h: "口訣：<span class='highlight'>要飯的跑了</span>！(要犯逃脫)。抓到的犯人解開手銬跑了，別跑！" },
+            // 用槍時機 (長條文)
+            { cat: "用槍時機", id: 1, q: "生命身體受暴行脅迫時...", a: "生命身體受暴行脅迫，非使用武器不能抵抗或自衛時。", h: "口訣：<span class='highlight'>殭屍勒脖</span>！不開槍會死。(抵抗、自衛)" },
+            { cat: "用槍時機", id: 2, q: "群眾暴動時...", a: "群眾暴動，非使用武器不能制止時。", h: "口訣：<span class='highlight'>暴民推牆</span>！一萬人衝過來。(群眾暴動、制止)" },
+            { cat: "用槍時機", id: 3, q: "所警衛之人員物資受危害時...", a: "所警衛之人員、物資、車船、航空器受危害脅迫時，非使用武器不能保護時。", h: "口訣：<span class='highlight'>小偷搶飛機</span>！保護你的車船航空器。(人員物資、保護)" },
+            { cat: "用槍時機", id: 4, q: "防衛駐所受襲擾時...", a: "因防衛駐所之土地、場所 、建築物受襲擾或擅闖，經警告仍不聽從，非使用武器而不能制止時。", h: "口訣：<span class='highlight'>強闖營區</span>！警告不聽就開槍。(土地場所建築物、擅闖、制止)" },
+            { cat: "用槍時機", id: 5, q: "要犯逃脫時...", a: "要犯逃脫，非使用武器不能制止時。", h: "口訣：<span class='highlight'>犯人跑了</span>！解開手銬跑了。(要犯逃脫、制止)" },
+
+            // 用槍要領
+            { cat: "用槍要領", id: 1, q: "如非情勢異常急迫...", a: "如非情勢異常急迫，應先口頭警告並對空鳴槍警告之。", h: "牛仔 SOP：先大喊 Freeze (口頭)，再朝天空開槍 (鳴槍)。" },
+            { cat: "用槍要領", id: 2, q: "經警告已有畏服...", a: "經警告已有畏服之情況時應立即停止使用。", h: "壞人跪地求饒(畏服)了，馬上收槍(停止)。" },
+            { cat: "用槍要領", id: 3, q: "使用武器應注意...", a: "使用武器應注意，勿傷及他人。", h: "子彈要會轉彎，閃過路邊賣花的阿嬤(勿傷他人)。" },
+            { cat: "用槍要領", id: 4, q: "如非情勢確有必要...", a: "如非情勢確有必要應儘量避免傷及其致命部位。", h: "真的要打只打<span class='highlight'>小腿</span>，不要爆頭(致命部位)。" },
+            { cat: "用槍要領", id: 5, q: "使用武器後...", a: "使用武器後，應將經過情形即時報告該管長官。", h: "打完收工，拿無線電跟長官<span class='highlight'>報告</span>。" }
         ];
 
-        // 狀態變數
-        let questions = [];
-        let currentIndex = 0;
+        // 系統變數
+        let examList = [];
+        let currIdx = 0;
         let score = 0;
-        let userAnswers = new Array(10).fill(""); // 存答案
-        let isReviewMode = false; // 是否處於「顯示答案中」的狀態
+        let userInputs = {}; // 紀錄每一題的作答
+        let isReviewed = {}; // 紀錄每一題是否已經送出檢查過
 
         // 初始化
-        function init() {
-            // 洗牌取 10 題
-            const shuffled = [...db].sort(() => 0.5 - Math.random());
-            questions = shuffled.slice(0, 10);
-            userAnswers = new Array(10).fill("");
-            renderQ();
+        function initGame() {
+            // 洗牌
+            examList = [...database].sort(() => Math.random() - 0.5); 
+            // 如果想測驗全部題目，可把 .slice(0, 10) 拿掉，或改成變數
+            examList = examList.slice(0, 10); 
+            
+            currIdx = 0;
+            score = 0;
+            userInputs = {};
+            isReviewed = {};
+            
+            renderQuestion();
         }
 
-        // 渲染題目
-        function renderQ() {
-            isReviewMode = false;
-            const q = questions[currentIndex];
+        function renderQuestion() {
+            const q = examList[currIdx];
             
             // 更新 UI
-            document.getElementById('progress-text').innerText = `第 ${currentIndex + 1} / 10 題`;
-            document.getElementById('score-text').innerText = `得分: ${score}`;
-            document.getElementById('q-cat').innerText = q.cat;
-            document.getElementById('q-body').innerText = q.cat.includes("用槍") ? `${q.q} (請接續)` : q.q;
+            document.getElementById('progress-disp').innerText = `${currIdx + 1} / ${examList.length}`;
+            document.getElementById('score-disp').innerText = `得分: ${score}`;
+            document.getElementById('q-category').innerText = q.cat;
             
-            // 輸入框處理
-            const input = document.getElementById('input-area');
-            input.value = userAnswers[currentIndex]; // 載入之前的回答（如果有）
+            // 對於"用槍時機"這種長題目，顯示開頭提示
+            let qTextDisplay = q.q;
+            if(q.cat.includes("用槍")) {
+                qTextDisplay += " (請接續)";
+            }
+            document.getElementById('q-text').innerText = qTextDisplay;
+
+            // 輸入框狀態
+            const input = document.getElementById('user-input');
+            input.value = userInputs[currIdx] || "";
+            
+            // 重置回饋區
+            document.getElementById('feedback-ui').style.display = 'none';
+            input.className = ""; // 移除紅綠框
             input.disabled = false;
-            input.className = ""; // 清除紅綠色
-            input.focus();
 
-            // 隱藏回饋區
-            document.getElementById('feedback').style.display = 'none';
-            
-            // 按鈕狀態
-            const btnAction = document.getElementById('btn-action');
-            btnAction.innerText = "送出檢查 (Enter)";
-            btnAction.className = "btn btn-submit";
-            btnAction.onclick = checkAnswer;
+            // 如果這題已經檢查過，要恢復顯示回饋
+            if (isReviewed[currIdx]) {
+                showFeedback(true); // 傳入 true 代表是「重繪」而非「新計算」
+            } else {
+                // 新題目狀態
+                const btnAction = document.getElementById('btn-action');
+                btnAction.innerHTML = "送出檢查 (Enter)";
+                btnAction.className = "btn btn-check";
+                btnAction.onclick = submitCheck;
+                setTimeout(() => input.focus(), 50); // 自動聚焦
+            }
 
-            document.getElementById('btn-back').disabled = (currentIndex === 0);
+            // 返回按鈕
+            document.getElementById('btn-back').disabled = (currIdx === 0);
         }
 
-        // 檢查答案 (核心邏輯)
-        function checkAnswer() {
-            const input = document.getElementById('input-area');
-            const userText = input.value.trim();
-            userAnswers[currentIndex] = userText; // 暫存
-
-            if (!userText) {
-                input.placeholder = "⚠️ 你還沒寫答案喔！";
-                input.focus();
+        function submitCheck() {
+            const input = document.getElementById('user-input');
+            const val = input.value.trim();
+            
+            if (!val) {
+                // 搖晃動畫
+                input.style.transform = "translateX(5px)";
+                setTimeout(() => input.style.transform = "translateX(0)", 100);
                 return;
             }
 
-            const correctText = questions[currentIndex].a;
+            // 儲存答案
+            userInputs[currIdx] = val;
             
-            // 比對 (去標點符號)
-            const cleanUser = userText.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
-            const cleanCorrect = correctText.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
-            const isCorrect = (cleanUser === cleanCorrect);
+            // 標記已檢查
+            isReviewed[currIdx] = true;
 
-            // 鎖定輸入
-            input.disabled = true;
-            isReviewMode = true;
-
-            // 顯示回饋區
-            document.getElementById('feedback').style.display = 'block';
-            document.getElementById('funny-hint').innerHTML = questions[currentIndex].h;
+            // 計算分數 (只在第一次檢查時計算，避免重複加分)
+            // 這裡邏輯簡化：只要進到 submitCheck 就代表是第一次送出
+            // 為了防止回上一題重複刷分，我們應該在 isReviewed 判斷
+            
+            const q = examList[currIdx];
+            // 模糊比對：移除所有標點符號與空白，只比對中文字與數字
+            const cleanUser = val.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
+            const cleanAns = q.a.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
+            
+            const isCorrect = (cleanUser === cleanAns);
 
             if (isCorrect) {
-                // 答對
                 score += 10;
-                document.getElementById('score-text').innerText = `得分: ${score}`;
-                input.className = "correct";
-                document.getElementById('diff-area').style.display = 'none';
-                document.getElementById('correct-msg').style.display = 'block';
-            } else {
-                // 答錯
-                input.className = "error";
-                document.getElementById('diff-area').style.display = 'grid';
-                document.getElementById('correct-msg').style.display = 'none';
-                document.getElementById('user-ans-disp').innerText = userText;
-                document.getElementById('correct-ans-disp').innerText = correctText;
+                document.getElementById('score-disp').innerText = `得分: ${score}`;
             }
 
-            // 更改按鈕為「下一題」
+            showFeedback(false, isCorrect);
+        }
+
+        function showFeedback(isRedraw, passedIsCorrect) {
+            const input = document.getElementById('user-input');
+            const q = examList[currIdx];
+            const val = userInputs[currIdx];
+            
+            // 重新計算正確性 (如果是重繪)
+            let isCorrect = passedIsCorrect;
+            if (isRedraw) {
+                const cleanUser = val.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
+                const cleanAns = q.a.replace(/[^\u4e00-\u9fa5a-zA-Z0-9]/g, "");
+                isCorrect = (cleanUser === cleanAns);
+            }
+
+            // UI 顯示
+            document.getElementById('feedback-ui').style.display = 'block';
+            document.getElementById('correct-ans-text').innerText = q.a; // 顯示含標點的正確答案
+            document.getElementById('hint-text').innerHTML = q.h;
+
+            input.disabled = true; // 鎖定輸入
+
+            if (isCorrect) {
+                input.className = "correct-state";
+                document.getElementById('user-row').style.display = 'none'; // 答對就不顯示錯誤對照
+                // 可以在這裡顯示一個「完全正確」的標示
+                document.getElementById('comparison-box').style.borderColor = "#27ae60";
+                document.getElementById('comparison-box').style.background = "#f0fdf4";
+            } else {
+                input.className = "wrong-state";
+                document.getElementById('user-row').style.display = 'flex';
+                document.getElementById('user-ans-text').innerText = val;
+                document.getElementById('comparison-box').style.borderColor = "#c0392b";
+                document.getElementById('comparison-box').style.background = "#fef2f2";
+            }
+
+            // 更新按鈕
             const btnAction = document.getElementById('btn-action');
-            btnAction.innerText = (currentIndex === 9) ? "看成績單 📝" : "下一題 ➡️";
-            btnAction.className = "btn btn-next"; // 變綠色
-            btnAction.style.display = "block"; // 確保顯示
-            btnAction.onclick = nextQ;
-            btnAction.focus(); // 讓使用者可以直接按 Enter 下一題
-        }
-
-        // 下一題
-        function nextQ() {
-            if (currentIndex < 9) {
-                currentIndex++;
-                renderQ();
+            if (currIdx < examList.length - 1) {
+                btnAction.innerHTML = "下一題 ➔";
+                btnAction.className = "btn btn-next";
+                btnAction.style.display = "flex";
+                btnAction.onclick = nextQ;
+                btnAction.focus(); // 方便連按
             } else {
-                showResult();
+                btnAction.innerHTML = "查看成績單 📝";
+                btnAction.className = "btn btn-next";
+                btnAction.style.display = "flex";
+                btnAction.onclick = showResult;
+                btnAction.focus();
             }
         }
 
-        // 上一題
-        function prevQ() {
-            if (currentIndex > 0) {
-                currentIndex--;
-                // 這裡有個邏輯：如果回上一題，應該是「重寫」還是「看結果」？
-                // 為了簡單，回上一題就是重寫，但會保留文字
-                renderQ();
-                // 如果該題已經被鎖定（已檢查過），其實應該保持鎖定比較好，但為了讓使用者修改，我們允許重寫（不扣分，也不重複加分，這裡簡化邏輯：重寫不計分或重新計分比較複雜，這裡僅允許修改文字，送出才算分。
-                // 修正：為了避免刷分，上一題回來後，分數邏輯會比較複雜。
-                // 簡單版：回來就是重置該題狀態，分數在送出時重新計算？
-                // 為了避免邏輯過於複雜，這個簡易版僅提供「往前修改」的功能，當作該題還沒送出。
-                // 實際操作：因為 checkAnswer 會加分，所以如果允許回頭，分數會重複加。
-                // 補救：如果回到已作答的題目，先扣掉該題原本的分數 (如果有拿到的話)。
-                // 這裡簡化：模擬考通常不給回頭看答案，但練習模式可以。
-                // 既然是練習模式，回上一題我們就重置該題 UI。
+        function nextQ() {
+            currIdx++;
+            renderQuestion();
+        }
+
+        function goBack() {
+            if (currIdx > 0) {
+                currIdx--;
+                renderQuestion();
             }
         }
 
-        // 結算
         function showResult() {
-            document.getElementById('quiz-ui').style.display = 'none';
-            document.getElementById('result-ui').style.display = 'block';
-            document.getElementById('final-score').innerText = score;
-
+            document.getElementById('quiz-interface').style.display = 'none';
+            document.getElementById('result-interface').style.display = 'block';
+            document.getElementById('final-score-val').innerText = score;
+            
             let comment = "";
-            if (score === 100) comment = "👑 記憶之神！你是不是偷吃記憶吐司？";
-            else if (score >= 80) comment = "🔥 相當厲害！那些諧音梗有效吧！";
-            else if (score >= 60) comment = "🙂 及格過關！錯的地方多唸幾次口訣！";
-            else comment = "💀 不及格！今晚留下來陪安官一起背！";
+            if (score === 100) comment = "🏆 完美！標點符號都難不倒你！";
+            else if (score >= 80) comment = "😎 優秀！有些小細節再注意一下就好。";
+            else if (score >= 60) comment = "🙂 及格！口訣多唸幾次會更熟。";
+            else comment = "💀 不及格！今晚罰寫十遍！";
+            
             document.getElementById('final-comment').innerText = comment;
         }
 
@@ -431,13 +468,14 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
-                // 觸發當前的主要按鈕
-                document.getElementById('btn-action').click();
+                // 觸發當前主要按鈕
+                const btn = document.getElementById('btn-action');
+                if (!btn.disabled) btn.click();
             }
         });
 
         // 啟動
-        init();
+        initGame();
 
     </script>
 </body>
