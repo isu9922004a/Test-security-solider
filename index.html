@@ -2,10 +2,8 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
-<meta name="viewport"
-content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-
-<title>金幣推推樂</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Happiness & Funny 推金幣</title>
 
 <style>
 *{
@@ -14,25 +12,35 @@ content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,vie
 }
 
 :root{
-  --bg:#08111f;
-  --panel:#111c2e;
-  --gold:#ffd44d;
-  --gold2:#ffb300;
-  --text:#f6f8fc;
-  --muted:#9fb0c8;
+  --bg1:#090f1c;
+  --bg2:#101c33;
+  --panel:#13233f;
+  --line:#35547d;
+  --gold1:#fff2a6;
+  --gold2:#ffd447;
+  --gold3:#d99200;
+  --red1:#ff6a7f;
+  --red2:#b40f34;
+  --blue1:#62c6ff;
+  --blue2:#215ec7;
+  --green1:#97ff83;
+  --green2:#1d9b4e;
+  --text:#f6f8ff;
+  --muted:#b8c6dd;
 }
 
 html,body{
   margin:0;
   min-height:100%;
-  background:linear-gradient(#08111f,#0e1a2d);
+  background:
+    radial-gradient(circle at top,#20345e 0%,#0f1730 30%,#090f1c 75%);
   color:var(--text);
   font-family:
-  -apple-system,
-  BlinkMacSystemFont,
-  "Segoe UI",
-  "Noto Sans TC",
-  sans-serif;
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    "Noto Sans TC",
+    sans-serif;
   overflow-x:hidden;
 }
 
@@ -44,2094 +52,1068 @@ body{
 #app{
   width:min(100vw,520px);
   padding:
-  calc(10px + env(safe-area-inset-top))
-  10px
-  calc(14px + env(safe-area-inset-bottom));
+    calc(10px + env(safe-area-inset-top))
+    10px
+    calc(14px + env(safe-area-inset-bottom));
 }
 
-h1{
-  margin:2px 0 8px;
-  text-align:center;
-  font-size:24px;
-}
-
-.hud{
+/* ===== TOP HUD ===== */
+.topBar{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;
+  grid-template-columns:70px 1fr 110px;
+  gap:8px;
+  align-items:center;
   margin-bottom:8px;
 }
 
-.card{
-  background:#111c2e;
-  border:1px solid #263954;
-  border-radius:13px;
-  padding:7px 3px;
+.roundBtn{
+  height:48px;
+  border-radius:16px;
+  border:1px solid #5a7db0;
+  background:linear-gradient(#20385b,#15253f);
+  color:white;
+  font-size:26px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 4px 0 rgba(0,0,0,.35);
+}
+
+.statusCenter{
+  background:linear-gradient(#1b3156,#132540);
+  border:1px solid #466895;
+  border-radius:18px;
+  padding:8px 10px;
+  text-align:center;
+  box-shadow:0 4px 0 rgba(0,0,0,.35);
+}
+
+.timer{
+  font-size:24px;
+  font-weight:900;
+  color:#ffe640;
+  line-height:1;
+}
+
+.machineName{
+  font-size:12px;
+  color:#d8e4f5;
+  margin-top:4px;
+}
+
+.coinPanel{
+  background:linear-gradient(#ffffff,#dfe9f8);
+  border-radius:18px;
+  color:#213253;
+  padding:8px 10px;
+  text-align:center;
+  box-shadow:0 4px 0 rgba(0,0,0,.22);
+  font-weight:900;
+}
+
+.coinPanel small{
+  display:block;
+  color:#556987;
+  font-size:11px;
+  margin-top:2px;
+}
+
+/* ===== MACHINE FRAME ===== */
+#machine{
+  position:relative;
+  border-radius:24px;
+  overflow:hidden;
+  border:3px solid #3a5c8f;
+  background:
+    radial-gradient(circle at top,#4f94ff 0%,#2b5ab4 30%,#153060 70%,#0b1730 100%);
+  box-shadow:0 16px 40px rgba(0,0,0,.42);
+}
+
+/* Decorative side curtains */
+#machine::before,
+#machine::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:52px;
+  z-index:0;
+  background:
+    linear-gradient(180deg,#ffcc5e 0 3%,transparent 3% 100%),
+    radial-gradient(circle at center,#fff2a8 0 1px,transparent 1px 100%),
+    linear-gradient(180deg,#d7333f,#7e071d);
+  background-size:100% 100%,16px 16px,100% 100%;
+  opacity:.95;
+}
+#machine::before{left:0;}
+#machine::after{right:0;}
+
+.inner{
+  position:relative;
+  z-index:1;
+  padding:10px 16px 12px;
+}
+
+/* ===== HEADER MARQUEE ===== */
+.marqueeWrap{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  gap:6px;
+  margin-bottom:6px;
+}
+
+.tent{
+  position:relative;
+  width:100%;
+  max-width:360px;
+  height:110px;
+}
+
+.tentTop{
+  position:absolute;
+  left:50%;
+  top:0;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:130px solid transparent;
+  border-right:130px solid transparent;
+  border-bottom:84px solid #f7d258;
+  filter:drop-shadow(0 4px 0 rgba(0,0,0,.22));
+}
+
+.tentTop::before{
+  content:"";
+  position:absolute;
+  left:-130px;
+  top:0;
+  width:260px;
+  height:84px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,86,86,.92) 0 22px,
+      rgba(255,239,168,.95) 22px 44px
+    );
+  clip-path:polygon(50% 0,100% 100%,0 100%);
+}
+
+.tentFlag{
+  position:absolute;
+  top:-8px;
+  left:50%;
+  transform:translateX(-50%);
+  width:18px;
+  height:18px;
+  background:#ff355d;
+  clip-path:polygon(0 0,100% 30%,0 60%);
+}
+
+.tentBoard{
+  position:absolute;
+  left:50%;
+  top:54px;
+  transform:translateX(-50%);
+  width:300px;
+  border-radius:18px;
+  padding:8px 12px;
+  border:3px solid #e6c15b;
+  background:
+    linear-gradient(180deg,#fff5c2,#ffd34f 45%,#ffb30a);
+  color:#6a2d00;
+  text-align:center;
+  box-shadow:0 8px 0 rgba(0,0,0,.25);
+}
+
+.tentBoard h1{
+  margin:0;
+  font-size:24px;
+  line-height:1;
+  letter-spacing:1px;
+  text-shadow:0 1px 0 rgba(255,255,255,.45);
+}
+
+.tentBoard p{
+  margin:4px 0 0;
+  font-size:11px;
+  color:#7d4300;
+  font-weight:800;
+}
+
+.bonusBadge{
+  position:absolute;
+  right:22px;
+  bottom:8px;
+  background:
+    radial-gradient(circle,#fffef5 0 18%,#c3b7ff 18% 50%,#6b56cf 50% 100%);
+  color:white;
+  font-weight:900;
+  font-size:13px;
+  width:88px;
+  height:88px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  line-height:1.1;
+  box-shadow:0 6px 0 rgba(0,0,0,.28);
+}
+
+/* ===== SLOT DECORATION ===== */
+.slotArea{
+  margin-top:6px;
+  display:grid;
+  grid-template-columns:1fr 88px;
+  gap:10px;
+  align-items:stretch;
+}
+
+.slotBox{
+  background:
+    linear-gradient(180deg,#ffe88b,#f9c13d 8%,#5b2e13 8%,#a75720 100%);
+  padding:10px;
+  border-radius:18px;
+  border:3px solid #efcd72;
+  box-shadow:0 8px 0 rgba(0,0,0,.25);
+}
+
+.slotScreen{
+  background:
+    linear-gradient(180deg,#f8fbff,#e6effa);
+  border-radius:10px;
+  border:3px solid #d7b663;
+  overflow:hidden;
+}
+
+.slotHead{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:4px;
+  padding:6px;
+  background:linear-gradient(180deg,#233f75,#152947);
+}
+
+.slotHead div{
+  background:#0b1d3e;
+  color:#f6f5ff;
+  text-align:center;
+  font-size:11px;
+  font-weight:900;
+  padding:4px 2px;
+  border-radius:6px;
+  border:1px solid #506fa3;
+}
+
+.slotGrid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(3,54px);
+  background:
+    linear-gradient(90deg,#dfe8f6 0,#ffffff 50%,#dfe8f6 100%);
+}
+
+.cell{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  border-right:1px solid #cbd6e7;
+  border-bottom:1px solid #cbd6e7;
+}
+
+.cell:nth-child(4n){
+  border-right:0;
+}
+
+.slotFooter{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:4px;
+  padding:6px;
+  background:linear-gradient(180deg,#f8d25c,#b36915);
+}
+
+.slotFooter div{
+  background:#f5f0ff;
+  color:#5c3684;
+  border-radius:999px;
+  text-align:center;
+  font-size:11px;
+  font-weight:900;
+  padding:2px 0;
+}
+
+.sideMeter{
+  border-radius:18px;
+  border:3px solid #f2cf75;
+  background:linear-gradient(180deg,#7a3b23,#5a2715 40%,#2e1320);
+  box-shadow:0 8px 0 rgba(0,0,0,.25);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.meterTop{
+  padding:8px;
+  background:linear-gradient(180deg,#203f73,#122648);
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
   text-align:center;
 }
 
-.card b{
-  display:block;
-  font-size:17px;
+.meterRows{
+  padding:8px;
+  display:grid;
+  gap:6px;
 }
 
-.card span{
+.meterRows div{
+  background:#f9f0ba;
+  color:#5d3810;
+  border-radius:6px;
+  padding:5px 4px;
   font-size:11px;
-  color:var(--muted);
+  font-weight:900;
+  text-align:center;
 }
 
-#gameBox{
+.meterBottom{
+  padding:8px;
+  text-align:center;
+  color:#fff;
+  font-size:10px;
+}
+
+.brandBar{
+  margin:10px auto 8px;
+  width:92%;
+  background:
+    linear-gradient(180deg,#c5f171,#7ab32f);
+  border:3px solid #efcd72;
+  border-radius:10px;
+  color:#26410e;
+  text-align:center;
+  font-weight:900;
+  font-size:26px;
+  letter-spacing:1px;
+  padding:6px 8px;
+  text-shadow:0 1px 0 rgba(255,255,255,.55);
+  box-shadow:0 6px 0 rgba(0,0,0,.22);
+}
+
+/* ===== CANVAS ZONE ===== */
+#canvasWrap{
   position:relative;
-  border:2px solid #29405f;
-  border-radius:18px;
+  margin-top:4px;
+  background:
+    linear-gradient(180deg,#2b2b35 0,#10131b 24%,#09111d 100%);
+  border-radius:16px;
+  border:2px solid #4d668a;
   overflow:hidden;
-  background:#06101c;
-  box-shadow:0 12px 35px rgba(0,0,0,.28);
+  box-shadow:inset 0 3px 10px rgba(255,255,255,.06);
 }
 
 canvas{
   display:block;
   width:100%;
   height:auto;
-  background:#0b1626;
+  background:
+    linear-gradient(180deg,#243246 0%,#111821 20%,#060a0f 100%);
   touch-action:none;
 }
 
-#banner{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(.9);
-
-  padding:12px 18px;
-
-  border-radius:999px;
-
-  background:rgba(7,15,26,.88);
-
-  border:1px solid #4c6687;
-
-  font-weight:900;
-  font-size:20px;
-
-  opacity:0;
-
-  pointer-events:none;
-
-  transition:.18s;
-}
-
-#banner.show{
-  opacity:1;
-  transform:translate(-50%,-50%) scale(1);
-}
-
-.controls{
+/* ===== BUTTONS ===== */
+.playControls{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:10px;
+  gap:10px;
+  margin-top:12px;
 }
 
-button{
-  font:inherit;
-}
-
-.main{
+.btn{
   border:0;
-  border-radius:15px;
-  padding:13px 8px;
-  font-size:17px;
+  border-radius:18px;
+  padding:14px 10px;
+  font-size:20px;
   font-weight:900;
+  box-shadow:0 5px 0 rgba(0,0,0,.28);
 }
 
-.drop{
-  background:linear-gradient(#ffe675,#ffbe24);
-  color:#332600;
-  box-shadow:0 4px 0 #a87500;
-}
-
-.auto{
-  background:linear-gradient(#2f5076,#1d3552);
-  color:white;
-  border:1px solid #406387;
-  box-shadow:0 4px 0 #08111f;
-}
-
-.main:active{
+.btn:active{
   transform:translateY(3px);
-  box-shadow:0 1px 0 rgba(0,0,0,.5);
+  box-shadow:0 1px 0 rgba(0,0,0,.28);
 }
 
-.aim{
-  margin-top:9px;
-  padding:9px 10px;
+#startAuto{
+  background:linear-gradient(180deg,#9fe8ff,#4d89ff 45%,#2758bc);
+  color:white;
+  border:1px solid #87beff;
+}
 
-  background:#111c2e;
+#stopAuto{
+  background:linear-gradient(180deg,#f0f1f5,#bebfc7 45%,#858896);
+  color:#26314d;
+  border:1px solid #dce4f4;
+}
 
-  border:1px solid #263954;
-
-  border-radius:14px;
+.aimWrap{
+  margin-top:10px;
+  background:linear-gradient(#192b49,#12233d);
+  border:1px solid #45678f;
+  border-radius:16px;
+  padding:10px;
 }
 
 .aimTitle{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-
   font-size:12px;
-
-  color:#b7c5d8;
-
+  color:#d8e4f7;
   margin-bottom:6px;
 }
 
 .track{
-  height:12px;
-
-  border-radius:999px;
-
-  background:#08111f;
-
   position:relative;
-
-  overflow:visible;
-
-  border:1px solid #263954;
+  height:14px;
+  border-radius:999px;
+  background:#0c1628;
+  border:1px solid #31507b;
 }
 
 .knob{
   position:absolute;
-
   top:50%;
-
-  width:20px;
-  height:20px;
-
+  width:22px;
+  height:22px;
   border-radius:50%;
-
-  background:#ffd44d;
-
+  background:radial-gradient(circle,#fff2b3 0,#ffd44c 55%,#db8c00 100%);
   transform:translate(-50%,-50%);
-
-  box-shadow:
-  0 0 0 3px rgba(255,212,77,.18);
+  box-shadow:0 0 0 4px rgba(255,212,76,.15);
 }
 
-.tip{
+.footerTip{
+  text-align:center;
+  color:#a7b9d3;
   font-size:12px;
   line-height:1.5;
+  margin-top:8px;
+}
 
-  color:#8fa3bd;
+#floatingText{
+  position:absolute;
+  left:50%;
+  top:56%;
+  transform:translate(-50%,-50%) scale(.9);
+  background:rgba(7,20,40,.82);
+  border:1px solid #75a3ff;
+  color:#fff;
+  padding:12px 18px;
+  border-radius:999px;
+  font-size:22px;
+  font-weight:900;
+  opacity:0;
+  pointer-events:none;
+  transition:.18s;
+  z-index:8;
+}
 
-  text-align:center;
-
-  margin-top:7px;
+#floatingText.show{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
 }
 </style>
 </head>
-
 <body>
 
 <div id="app">
 
-<h1>🪙 金幣推推樂</h1>
+  <div class="topBar">
+    <div class="roundBtn">↩</div>
 
-<div class="hud">
+    <div class="statusCenter">
+      <div class="timer" id="timer">99s</div>
+      <div class="machineName">2026.09.07　Happiness & Funny</div>
+    </div>
 
-<div class="card">
-<b id="credits">30</b>
-<span>可投金幣</span>
+    <div class="coinPanel">
+      <div id="coinTotal">100</div>
+      <small>剩餘金幣</small>
+    </div>
+  </div>
+
+  <div id="machine">
+    <div class="inner">
+
+      <div class="marqueeWrap">
+        <div class="tent">
+          <div class="tentFlag"></div>
+          <div class="tentTop"></div>
+          <div class="tentBoard">
+            <h1>HAPPINESS & FUNNY</h1>
+            <p>馬戲團推金幣機台</p>
+          </div>
+          <div class="bonusBadge">BONUS<br>SPIN</div>
+        </div>
+      </div>
+
+      <div class="slotArea">
+        <div class="slotBox">
+          <div class="slotScreen">
+            <div class="slotHead">
+              <div>JP1 0567</div>
+              <div>JP2 1074</div>
+              <div>JP3 2037</div>
+              <div>MINI 3386</div>
+            </div>
+
+            <div class="slotGrid">
+              <div class="cell">🎈</div>
+              <div class="cell">🎪</div>
+              <div class="cell">🎩</div>
+              <div class="cell">🤹</div>
+
+              <div class="cell">🫧</div>
+              <div class="cell">🎩</div>
+              <div class="cell">🏖️</div>
+              <div class="cell">🎈</div>
+
+              <div class="cell">🎩</div>
+              <div class="cell">🎪</div>
+              <div class="cell">🪀</div>
+              <div class="cell">🫧</div>
+            </div>
+
+            <div class="slotFooter">
+              <div>10</div>
+              <div>25</div>
+              <div>50</div>
+              <div>100</div>
+              <div>33</div>
+              <div>10</div>
+              <div>97</div>
+              <div>45</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sideMeter">
+          <div class="meterTop">BONUS LIST</div>
+
+          <div class="meterRows">
+            <div>000001</div>
+            <div>000120</div>
+            <div>000860</div>
+            <div>SPIN</div>
+          </div>
+
+          <div class="meterBottom">Circus Bonus</div>
+        </div>
+      </div>
+
+      <div class="brandBar">HAPPINESS &amp; FUNNY</div>
+
+      <div id="canvasWrap">
+        <canvas id="game" width="432" height="500"></canvas>
+        <div id="floatingText">+1</div>
+      </div>
+
+      <div class="aimWrap">
+        <div class="aimTitle">
+          <span>投幣位置</span>
+          <span>可拖曳滑桿或點畫面上方</span>
+        </div>
+
+        <div class="track" id="track">
+          <div class="knob" id="knob"></div>
+        </div>
+      </div>
+
+      <div class="playControls">
+        <button class="btn" id="startAuto">開始投幣</button>
+        <button class="btn" id="stopAuto">取消投幣</button>
+      </div>
+
+      <div class="footerTip">
+        玩法：開始投幣後會持續落幣，推盤會前後推動。<br>
+        把金幣推落到前方黑色掉落區，就能得分。
+      </div>
+    </div>
+  </div>
 </div>
-
-<div class="card">
-<b id="won">0</b>
-<span>掉落得分</span>
-</div>
-
-<div class="card">
-<b id="combo">x1</b>
-<span>連續掉落</span>
-</div>
-
-<div class="card">
-<b id="best">0</b>
-<span>最高分</span>
-</div>
-
-</div>
-
-
-<div id="gameBox">
-
-<canvas
-id="game"
-width="432"
-height="620">
-</canvas>
-
-<div id="banner">
-+1 金幣！
-</div>
-
-</div>
-
-
-<div class="aim">
-
-<div class="aimTitle">
-
-<span>
-投幣位置
-</span>
-
-<span>
-拖曳或點遊戲上方
-</span>
-
-</div>
-
-<div id="track" class="track">
-
-<div
-id="knob"
-class="knob">
-</div>
-
-</div>
-
-</div>
-
-
-<div class="controls">
-
-<button
-id="dropBtn"
-class="main drop">
-🪙 投幣
-</button>
-
-<button
-id="autoBtn"
-class="main auto">
-▶ 自動投幣：關
-</button>
-
-</div>
-
-
-<div class="tip">
-
-純娛樂遊戲，不涉及真實金錢。
-
-<br>
-
-選好位置 → 投幣 → 等推板把金幣推下前緣。
-
-<br>
-
-⭐ 星星金幣掉落可獲得額外分數。
-
-</div>
-
-</div>
-
 
 <script>
 (()=>{
-
 "use strict";
 
-const canvas =
-document.getElementById("game");
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-const ctx =
-canvas.getContext("2d");
+const timerEl = document.getElementById("timer");
+const coinTotalEl = document.getElementById("coinTotal");
+const track = document.getElementById("track");
+const knob = document.getElementById("knob");
+const floatingText = document.getElementById("floatingText");
+const startAutoBtn = document.getElementById("startAuto");
+const stopAutoBtn = document.getElementById("stopAuto");
 
+const W = canvas.width;
+const H = canvas.height;
 
-const creditsEl =
-document.getElementById("credits");
-
-const wonEl =
-document.getElementById("won");
-
-const comboEl =
-document.getElementById("combo");
-
-const bestEl =
-document.getElementById("best");
-
-
-const dropBtn =
-document.getElementById("dropBtn");
-
-const autoBtn =
-document.getElementById("autoBtn");
-
-const track =
-document.getElementById("track");
-
-const knob =
-document.getElementById("knob");
-
-const banner =
-document.getElementById("banner");
-
-
-const W =
-canvas.width;
-
-const H =
-canvas.height;
-
-
-const LEFT = 28;
-
-const RIGHT =
-W - 28;
-
-const TOP = 62;
-
-const EDGE = 565;
-
+const LEFT = 24;
+const RIGHT = W - 24;
+const TOP = 24;
+const DROP_Y = H - 52;
 const COIN_R = 13;
 
+let credits = 100;
+let score = 0;
+let timer = 99;
+let gameActive = true;
 
-let credits = 30;
-
-let won = 0;
-
-let combo = 1;
-
-
-let best =
-Number(
-localStorage.getItem(
-"coinPusherBest"
-) || 0
-);
-
-
-let aimX =
-W / 2;
-
-
+let aimX = W / 2;
 let coins = [];
 
-
-let auto = false;
-
-let lastAuto = 0;
-
-let lastTime =
-performance.now();
-
-
+let autoDropping = false;
+let lastAutoDrop = 0;
+let lastTime = performance.now();
+let secondAccumulator = 0;
 let bannerTimer = null;
 
-
-let pusher = {
-
-y:225,
-
-minY:205,
-
-maxY:305,
-
-dir:1,
-
-speed:64,
-
-vy:0,
-
-h:48
-
+const pusher = {
+  y: 170,
+  minY: 156,
+  maxY: 235,
+  h: 52,
+  dir: 1,
+  speed: 68,
+  vy: 0
 };
 
+function updateUI(){
+  timerEl.textContent = timer + "s";
+  coinTotalEl.textContent = credits;
 
-/* ===========================
-   HUD
-=========================== */
-
-function updateHUD(){
-
-creditsEl.textContent =
-credits;
-
-
-wonEl.textContent =
-won;
-
-
-comboEl.textContent =
-"x" + combo;
-
-
-bestEl.textContent =
-best;
-
-
-const pct =
-
-(aimX - LEFT) /
-
-(RIGHT - LEFT);
-
-
-knob.style.left =
-
-(pct * 100) +
-
-"%";
-
+  const percent = (aimX - LEFT) / (RIGHT - LEFT);
+  knob.style.left = (percent * 100) + "%";
 }
 
-
-/* ===========================
-   RANDOM
-=========================== */
+function showFloat(text){
+  floatingText.textContent = text;
+  floatingText.classList.add("show");
+  clearTimeout(bannerTimer);
+  bannerTimer = setTimeout(()=>{
+    floatingText.classList.remove("show");
+  }, 500);
+}
 
 function rand(a,b){
-
-return
-
-a +
-
-Math.random() *
-
-(b-a);
-
+  return a + Math.random() * (b-a);
 }
 
+function addCoin(x,y,special=false,vx=0,vy=0){
+  coins.push({
+    x,y,
+    r:COIN_R,
+    vx,vy,
+    rot:Math.random()*Math.PI*2,
+    spin:(Math.random()-.5)*2,
+    special,
+    dead:false
+  });
 
-/* ===========================
-   CREATE COIN
-=========================== */
-
-function addCoin(
-
-x,
-
-y,
-
-special=false,
-
-vx=0,
-
-vy=0
-
-){
-
-coins.push({
-
-x:x,
-
-y:y,
-
-r:COIN_R,
-
-vx:vx,
-
-vy:vy,
-
-rot:
-Math.random() *
-Math.PI *
-2,
-
-spin:
-(Math.random()-.5) *
-2,
-
-special:special,
-
-dead:false
-
-});
-
-
-if(
-coins.length >
-180
-){
-
-coins.splice(
-0,
-coins.length-180
-);
-
+  if(coins.length > 230){
+    coins.splice(0, coins.length - 230);
+  }
 }
-
-}
-
-
-/* ===========================
-   STARTING COINS
-=========================== */
 
 function seedCoins(){
-
-coins = [];
-
-
-for(
-let row=0;
-row<6;
-row++
-){
-
-for(
-let col=0;
-col<8;
-col++
-){
-
-const x =
-
-78 +
-
-col*39 +
-
-(row%2 ? 19 : 0);
-
-
-const y =
-
-320 +
-
-row*36 +
-
-(
-Math.random()*4-2
-);
-
-
-if(
-x <
-RIGHT-10
-){
-
-addCoin(
-
-x,
-
-y,
-
-Math.random() <
-0.055
-
-);
-
+  coins = [];
+  for(let row=0; row<6; row++){
+    for(let col=0; col<9; col++){
+      const x = 64 + col*34 + (row%2 ? 16 : 0);
+      const y = 282 + row*28 + rand(-2,2);
+      if(x < RIGHT - 10){
+        addCoin(x,y,Math.random()<0.06,rand(-2,2),0);
+      }
+    }
+  }
+  for(let i=0;i<18;i++){
+    addCoin(rand(LEFT+20,RIGHT-20), rand(360,440), Math.random()<0.04, rand(-1.5,1.5), 0);
+  }
 }
 
+function resetGame(){
+  credits = 100;
+  score = 0;
+  timer = 99;
+  aimX = W/2;
+  autoDropping = false;
+  gameActive = true;
+  pusher.y = 170;
+  pusher.dir = 1;
+  seedCoins();
+  updateUI();
 }
-
-}
-
-}
-
-
-/* ===========================
-   RESET
-=========================== */
-
-function reset(){
-
-credits = 30;
-
-won = 0;
-
-combo = 1;
-
-aimX = W/2;
-
-
-pusher.y = 225;
-
-pusher.dir = 1;
-
-
-seedCoins();
-
-updateHUD();
-
-}
-
-
-/* ===========================
-   BANNER
-=========================== */
-
-function showBanner(text){
-
-banner.textContent =
-text;
-
-
-banner.classList.add(
-"show"
-);
-
-
-clearTimeout(
-bannerTimer
-);
-
-
-bannerTimer =
-setTimeout(
-()=>{
-
-banner.classList.remove(
-"show"
-);
-
-},
-520
-);
-
-}
-
-
-/* ===========================
-   DROP COIN
-=========================== */
 
 function dropCoin(){
+  if(!gameActive) return;
+  if(credits <= 0){
+    showFloat("沒金幣了");
+    return;
+  }
 
-if(
-credits <= 0
-){
-
-showBanner(
-"沒有金幣了"
-);
-
-return;
-
+  credits--;
+  addCoin(aimX, TOP + 6, Math.random()<0.08, rand(-4,4), 28);
+  updateUI();
 }
 
-
-credits--;
-
-
-addCoin(
-
-aimX,
-
-TOP + 4,
-
-Math.random() <
-0.06,
-
-Math.random()*10-5,
-
-34
-
-);
-
-
-updateHUD();
-
+function awardCoin(c){
+  if(c.special){
+    score += 5;
+    credits += 2;
+    showFloat("⭐ +5");
+  }else{
+    score += 1;
+    showFloat("🪙 +1");
+  }
+  updateUI();
 }
-
-
-/* ===========================
-   SCORE
-=========================== */
-
-function award(coin){
-
-const oldCombo =
-combo;
-
-
-const points =
-coin.special
-?
-5
-:
-1;
-
-
-const add =
-points *
-oldCombo;
-
-
-won +=
-add;
-
-
-if(
-coin.special
-){
-
-credits += 2;
-
-}
-
-
-combo =
-Math.min(
-9,
-combo + 1
-);
-
-
-if(
-won >
-best
-){
-
-best =
-won;
-
-
-localStorage.setItem(
-
-"coinPusherBest",
-
-String(best)
-
-);
-
-}
-
-
-if(
-coin.special
-){
-
-showBanner(
-
-"⭐ +" +
-add +
-" 分！"
-
-);
-
-}else{
-
-showBanner(
-
-"🪙 +" +
-add +
-" 分！"
-
-);
-
-}
-
-
-updateHUD();
-
-}
-
-
-/* ===========================
-   PHYSICS
-=========================== */
 
 function step(dt){
+  if(gameActive){
+    secondAccumulator += dt;
+    if(secondAccumulator >= 1){
+      secondAccumulator -= 1;
+      timer--;
+      if(timer <= 0){
+        timer = 0;
+        gameActive = false;
+        autoDropping = false;
+        showFloat("時間到");
+      }
+      updateUI();
+    }
+  }
 
+  const previousY = pusher.y;
+  pusher.y += pusher.dir * pusher.speed * dt;
 
-const previousY =
-pusher.y;
+  if(pusher.y >= pusher.maxY){
+    pusher.y = pusher.maxY;
+    pusher.dir = -1;
+  }
+  if(pusher.y <= pusher.minY){
+    pusher.y = pusher.minY;
+    pusher.dir = 1;
+  }
 
+  pusher.vy = (pusher.y - previousY) / Math.max(dt, 0.0001);
 
-pusher.y +=
+  for(const c of coins){
+    c.vy += 8 * dt;
+    c.vx *= Math.pow(0.967, dt*60);
+    c.vy *= Math.pow(0.969, dt*60);
 
-pusher.dir *
+    c.x += c.vx * dt;
+    c.y += c.vy * dt;
+    c.rot += c.spin * dt;
 
-pusher.speed *
+    if(c.x - c.r < LEFT){
+      c.x = LEFT + c.r;
+      c.vx = Math.abs(c.vx) * 0.45;
+    }
 
-dt;
+    if(c.x + c.r > RIGHT){
+      c.x = RIGHT - c.r;
+      c.vx = -Math.abs(c.vx) * 0.45;
+    }
 
+    if(c.y - c.r < TOP){
+      c.y = TOP + c.r;
+      c.vy = Math.abs(c.vy) * 0.35;
+    }
 
-if(
-pusher.y >=
-pusher.maxY
-){
+    const px1 = LEFT + 8;
+    const px2 = RIGHT - 8;
+    const py1 = pusher.y;
+    const py2 = pusher.y + pusher.h;
 
-pusher.y =
-pusher.maxY;
+    if(
+      c.x + c.r > px1 &&
+      c.x - c.r < px2 &&
+      c.y + c.r > py1 &&
+      c.y - c.r < py2
+    ){
+      if(c.y < py1 + pusher.h*0.56){
+        c.y = py1 - c.r;
+        c.vy = Math.min(c.vy, pusher.vy * 0.75);
+      }else{
+        c.y = py2 + c.r;
+        c.vy = Math.max(c.vy, pusher.vy * 0.95 + 20);
+      }
+    }
+  }
 
-pusher.dir = -1;
+  for(let iteration=0; iteration<2; iteration++){
+    for(let i=0; i<coins.length; i++){
+      const a = coins[i];
+      if(a.dead) continue;
 
+      for(let j=i+1; j<coins.length; j++){
+        const b = coins[j];
+        if(b.dead) continue;
+
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const rr = a.r + b.r;
+        const d2 = dx*dx + dy*dy;
+
+        if(d2 <= 0 || d2 >= rr*rr) continue;
+
+        const d = Math.sqrt(d2);
+        const nx = dx / d;
+        const ny = dy / d;
+        const overlap = rr - d;
+
+        a.x -= nx * overlap * 0.5;
+        a.y -= ny * overlap * 0.5;
+        b.x += nx * overlap * 0.5;
+        b.y += ny * overlap * 0.5;
+
+        const rvx = b.vx - a.vx;
+        const rvy = b.vy - a.vy;
+        const sep = rvx*nx + rvy*ny;
+
+        if(sep < 0){
+          const impulse = -sep * 0.42;
+          a.vx -= impulse * nx;
+          a.vy -= impulse * ny;
+          b.vx += impulse * nx;
+          b.vy += impulse * ny;
+        }
+      }
+    }
+  }
+
+  for(const c of coins){
+    if(c.y - c.r > DROP_Y){
+      c.dead = true;
+      awardCoin(c);
+    }
+  }
+
+  coins = coins.filter(c => !c.dead && c.y < H + 80);
 }
-
-
-if(
-pusher.y <=
-pusher.minY
-){
-
-pusher.y =
-pusher.minY;
-
-pusher.dir = 1;
-
-}
-
-
-pusher.vy =
-
-(pusher.y -
-previousY) /
-
-Math.max(
-dt,
-0.0001
-);
-
-
-
-/* COIN MOVEMENT */
-
-for(
-const c
-of coins
-){
-
-/* 微微往出口方向移動 */
-
-c.vy +=
-
-7.5 *
-
-dt;
-
-
-/* 摩擦 */
-
-c.vx *=
-
-Math.pow(
-0.965,
-dt*60
-);
-
-
-c.vy *=
-
-Math.pow(
-0.965,
-dt*60
-);
-
-
-c.x +=
-c.vx * dt;
-
-
-c.y +=
-c.vy * dt;
-
-
-c.rot +=
-c.spin * dt;
-
-
-
-/* 左牆 */
-
-if(
-c.x -
-c.r <
-LEFT
-){
-
-c.x =
-LEFT +
-c.r;
-
-
-c.vx =
-Math.abs(
-c.vx
-) * 0.5;
-
-}
-
-
-/* 右牆 */
-
-if(
-c.x +
-c.r >
-RIGHT
-){
-
-c.x =
-RIGHT -
-c.r;
-
-
-c.vx =
--Math.abs(
-c.vx
-) * 0.5;
-
-}
-
-
-/* 後牆 */
-
-if(
-c.y -
-c.r <
-TOP
-){
-
-c.y =
-TOP +
-c.r;
-
-
-c.vy =
-Math.abs(
-c.vy
-) * 0.4;
-
-}
-
-
-/* ===========================
-   PUSHER COLLISION
-=========================== */
-
-const px1 =
-LEFT + 9;
-
-const px2 =
-RIGHT - 9;
-
-const py1 =
-pusher.y;
-
-const py2 =
-pusher.y +
-pusher.h;
-
-
-if(
-
-c.x+c.r > px1 &&
-
-c.x-c.r < px2 &&
-
-c.y+c.r > py1 &&
-
-c.y-c.r < py2
-
-){
-
-if(
-c.y <
-py1 +
-pusher.h*0.55
-){
-
-c.y =
-py1 -
-c.r;
-
-
-c.vy =
-Math.min(
-
-c.vy,
-
-pusher.vy *
-0.75
-
-);
-
-}
-
-else{
-
-c.y =
-py2 +
-c.r;
-
-
-c.vy =
-Math.max(
-
-c.vy,
-
-pusher.vy *
-0.9 +
-22
-
-);
-
-}
-
-}
-
-}
-
-
-/* ===========================
-   COIN VS COIN
-=========================== */
-
-for(
-let iteration=0;
-iteration<2;
-iteration++
-){
-
-for(
-let i=0;
-i<coins.length;
-i++
-){
-
-const a =
-coins[i];
-
-
-if(
-a.dead
-){
-
-continue;
-
-}
-
-
-for(
-let j=i+1;
-j<coins.length;
-j++
-){
-
-const b =
-coins[j];
-
-
-if(
-b.dead
-){
-
-continue;
-
-}
-
-
-let dx =
-b.x-a.x;
-
-
-let dy =
-b.y-a.y;
-
-
-const radius =
-a.r+b.r;
-
-
-const distanceSquared =
-dx*dx +
-dy*dy;
-
-
-if(
-
-distanceSquared <= 0 ||
-
-distanceSquared >=
-radius*radius
-
-){
-
-continue;
-
-}
-
-
-const distance =
-Math.sqrt(
-distanceSquared
-);
-
-
-const nx =
-dx /
-distance;
-
-
-const ny =
-dy /
-distance;
-
-
-const overlap =
-radius -
-distance;
-
-
-/* 分離金幣 */
-
-a.x -=
-
-nx *
-overlap *
-0.5;
-
-
-a.y -=
-
-ny *
-overlap *
-0.5;
-
-
-b.x +=
-
-nx *
-overlap *
-0.5;
-
-
-b.y +=
-
-ny *
-overlap *
-0.5;
-
-
-
-/* 碰撞速度 */
-
-const rvx =
-b.vx -
-a.vx;
-
-
-const rvy =
-b.vy -
-a.vy;
-
-
-const separatingVelocity =
-
-rvx*nx +
-
-rvy*ny;
-
-
-if(
-separatingVelocity <
-0
-){
-
-const impulse =
-
--separatingVelocity *
-
-0.42;
-
-
-a.vx -=
-impulse*nx;
-
-a.vy -=
-impulse*ny;
-
-
-b.vx +=
-impulse*nx;
-
-b.vy +=
-impulse*ny;
-
-}
-
-}
-
-}
-
-}
-
-
-/* ===========================
-   FALLING COINS
-=========================== */
-
-for(
-const c
-of coins
-){
-
-if(
-c.y -
-c.r >
-EDGE
-){
-
-c.dead =
-true;
-
-
-award(c);
-
-}
-
-}
-
-
-coins =
-coins.filter(
-
-c =>
-
-!c.dead &&
-
-c.y <
-H+70
-
-);
-
-}
-
-
-/* ===========================
-   DRAW COIN
-=========================== */
 
 function drawCoin(c){
+  ctx.save();
+  ctx.translate(c.x, c.y);
+  ctx.rotate(c.rot);
 
-ctx.save();
+  const g = ctx.createRadialGradient(-4,-4,2,0,0,c.r);
 
+  if(c.special){
+    g.addColorStop(0,"#fff9b5");
+    g.addColorStop(.4,"#ffe363");
+    g.addColorStop(1,"#de8f00");
+  }else{
+    g.addColorStop(0,"#fff4b6");
+    g.addColorStop(.42,"#ffd04f");
+    g.addColorStop(1,"#a96a00");
+  }
 
-ctx.translate(
-c.x,
-c.y
-);
+  ctx.fillStyle = g;
+  ctx.beginPath();
+  ctx.arc(0,0,c.r,0,Math.PI*2);
+  ctx.fill();
 
+  ctx.strokeStyle = "rgba(119,73,0,.8)";
+  ctx.lineWidth = 2;
+  ctx.stroke();
 
-ctx.rotate(
-c.rot
-);
+  ctx.strokeStyle = "rgba(255,255,255,.56)";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(0,0,c.r-4,0,Math.PI*2);
+  ctx.stroke();
 
+  ctx.fillStyle = "#8c5900";
+  ctx.font = "bold 12px -apple-system,sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(c.special ? "★" : "1", 0, .5);
 
-const gradient =
-
-ctx.createRadialGradient(
-
--4,
--5,
-2,
-
-0,
-0,
-c.r
-
-);
-
-
-if(
-c.special
-){
-
-gradient.addColorStop(
-0,
-"#fff9ae"
-);
-
-gradient.addColorStop(
-0.45,
-"#ffe25d"
-);
-
-gradient.addColorStop(
-1,
-"#ed9800"
-);
-
-}else{
-
-gradient.addColorStop(
-0,
-"#fff0a0"
-);
-
-gradient.addColorStop(
-0.45,
-"#ffd24a"
-);
-
-gradient.addColorStop(
-1,
-"#b87800"
-);
-
+  ctx.restore();
 }
-
-
-ctx.fillStyle =
-gradient;
-
-
-ctx.beginPath();
-
-
-ctx.arc(
-
-0,
-0,
-c.r,
-
-0,
-
-Math.PI*2
-
-);
-
-
-ctx.fill();
-
-
-ctx.strokeStyle =
-"rgba(100,60,0,.75)";
-
-
-ctx.lineWidth = 2;
-
-ctx.stroke();
-
-
-ctx.strokeStyle =
-"rgba(255,255,255,.55)";
-
-
-ctx.lineWidth = 1;
-
-
-ctx.beginPath();
-
-
-ctx.arc(
-
-0,
-
-0,
-
-c.r-4,
-
-0,
-
-Math.PI*2
-
-);
-
-
-ctx.stroke();
-
-
-ctx.fillStyle =
-"#986300";
-
-
-ctx.font =
-"bold 12px -apple-system";
-
-
-ctx.textAlign =
-"center";
-
-
-ctx.textBaseline =
-"middle";
-
-
-ctx.fillText(
-
-c.special
-?
-"★"
-:
-"1",
-
-0,
-
-0.5
-
-);
-
-
-ctx.restore();
-
-}
-
-
-/* ===========================
-   DRAW GAME
-=========================== */
 
 function draw(){
+  ctx.clearRect(0,0,W,H);
 
-ctx.clearRect(
-0,
-0,
-W,
-H
-);
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,"#181f2c");
+  bg.addColorStop(.4,"#0d121b");
+  bg.addColorStop(1,"#04070b");
+  ctx.fillStyle = bg;
+  ctx.fillRect(0,0,W,H);
 
+  ctx.fillStyle = "#29384f";
+  ctx.fillRect(LEFT-8, TOP-4, 8, DROP_Y-TOP+18);
+  ctx.fillRect(RIGHT, TOP-4, 8, DROP_Y-TOP+18);
 
-/* 背景 */
+  ctx.fillStyle = "#1a2636";
+  ctx.fillRect(LEFT, TOP, RIGHT-LEFT, DROP_Y-TOP);
 
-const background =
+  ctx.strokeStyle = "rgba(255,255,255,.04)";
+  for(let y=TOP; y<DROP_Y; y+=28){
+    ctx.beginPath();
+    ctx.moveTo(LEFT, y);
+    ctx.lineTo(RIGHT, y);
+    ctx.stroke();
+  }
 
-ctx.createLinearGradient(
+  ctx.fillStyle = "rgba(90,120,160,.92)";
+  ctx.fillRect(LEFT+8, pusher.y, RIGHT-LEFT-16, pusher.h);
 
-0,
-0,
+  ctx.fillStyle = "rgba(255,255,255,.13)";
+  ctx.fillRect(LEFT+8, pusher.y, RIGHT-LEFT-16, 6);
 
-0,
-H
+  ctx.fillStyle = "#1b293a";
+  ctx.fillRect(LEFT+8, pusher.y + pusher.h - 7, RIGHT-LEFT-16, 7);
 
-);
+  ctx.fillStyle = "#5e748d";
+  ctx.fillRect(LEFT, DROP_Y, RIGHT-LEFT, 10);
 
+  ctx.fillStyle = "#04070a";
+  ctx.fillRect(LEFT, DROP_Y+10, RIGHT-LEFT, H-DROP_Y-10);
 
-background.addColorStop(
-0,
-"#152845"
-);
+  ctx.fillStyle = "#c3d2e5";
+  ctx.font = "bold 12px -apple-system,sans-serif";
+  ctx.textAlign = "center";
+  ctx.fillText("▼ 掉落得分區 ▼", W/2, DROP_Y+30);
 
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,220,108,.88)";
+  ctx.setLineDash([6,5]);
+  ctx.beginPath();
+  ctx.moveTo(aimX, 2);
+  ctx.lineTo(aimX, TOP-2);
+  ctx.stroke();
+  ctx.restore();
 
-background.addColorStop(
-1,
-"#08121f"
-);
+  ctx.fillStyle = "#ffd84e";
+  ctx.beginPath();
+  ctx.moveTo(aimX-8, TOP-10);
+  ctx.lineTo(aimX+8, TOP-10);
+  ctx.lineTo(aimX, TOP+1);
+  ctx.closePath();
+  ctx.fill();
 
+  for(const c of coins){
+    drawCoin(c);
+  }
 
-ctx.fillStyle =
-background;
+  ctx.fillStyle = "rgba(0,0,0,.18)";
+  for(let i=0;i<20;i++){
+    const x = LEFT + i*19;
+    ctx.fillRect(x, DROP_Y+2, 1, 12);
+  }
 
+  if(!gameActive){
+    ctx.fillStyle = "rgba(6,12,20,.68)";
+    ctx.fillRect(0,0,W,H);
 
-ctx.fillRect(
-0,
-0,
-W,
-H
-);
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.font = "bold 34px -apple-system,sans-serif";
+    ctx.fillText("時間到", W/2, H/2 - 18);
 
-
-/* 機台左右邊框 */
-
-ctx.fillStyle =
-"#263f5f";
-
-
-ctx.fillRect(
-
-LEFT-8,
-
-TOP-18,
-
-8,
-
-EDGE-TOP+36
-
-);
-
-
-ctx.fillRect(
-
-RIGHT,
-
-TOP-18,
-
-8,
-
-EDGE-TOP+36
-
-);
-
-
-/* 遊戲桌面 */
-
-ctx.fillStyle =
-"#0d2036";
-
-
-ctx.fillRect(
-
-LEFT,
-
-TOP,
-
-RIGHT-LEFT,
-
-EDGE-TOP
-
-);
-
-
-/* 桌面線 */
-
-ctx.strokeStyle =
-"rgba(255,255,255,.05)";
-
-
-for(
-let y=TOP;
-y<EDGE;
-y+=32
-){
-
-ctx.beginPath();
-
-
-ctx.moveTo(
-LEFT,
-y
-);
-
-
-ctx.lineTo(
-RIGHT,
-y
-);
-
-
-ctx.stroke();
-
+    ctx.font = "bold 20px -apple-system,sans-serif";
+    ctx.fillText("本局得分：" + score, W/2, H/2 + 20);
+  }
 }
-
-
-/* ===========================
-   PUSHER
-=========================== */
-
-ctx.fillStyle =
-"rgba(72,112,153,.90)";
-
-
-ctx.fillRect(
-
-LEFT+9,
-
-pusher.y,
-
-RIGHT-LEFT-18,
-
-pusher.h
-
-);
-
-
-ctx.fillStyle =
-"rgba(255,255,255,.13)";
-
-
-ctx.fillRect(
-
-LEFT+9,
-
-pusher.y,
-
-RIGHT-LEFT-18,
-
-5
-
-);
-
-
-ctx.fillStyle =
-"#1f3149";
-
-
-ctx.fillRect(
-
-LEFT+9,
-
-pusher.y+
-pusher.h-7,
-
-RIGHT-LEFT-18,
-
-7
-
-);
-
-
-/* ===========================
-   FRONT EDGE
-=========================== */
-
-ctx.fillStyle =
-"#5c748f";
-
-
-ctx.fillRect(
-
-LEFT,
-
-EDGE,
-
-RIGHT-LEFT,
-
-9
-
-);
-
-
-ctx.fillStyle =
-"#080e17";
-
-
-ctx.fillRect(
-
-LEFT,
-
-EDGE+9,
-
-RIGHT-LEFT,
-
-H-EDGE-9
-
-);
-
-
-ctx.fillStyle =
-"#b7c5d8";
-
-
-ctx.font =
-"bold 12px -apple-system";
-
-
-ctx.textAlign =
-"center";
-
-
-ctx.fillText(
-
-"▼ 金幣掉落區 ▼",
-
-W/2,
-
-EDGE+31
-
-);
-
-
-/* ===========================
-   AIM LINE
-=========================== */
-
-ctx.save();
-
-
-ctx.strokeStyle =
-"rgba(255,212,77,.80)";
-
-
-ctx.setLineDash(
-[6,5]
-);
-
-
-ctx.beginPath();
-
-
-ctx.moveTo(
-aimX,
-20
-);
-
-
-ctx.lineTo(
-aimX,
-TOP-4
-);
-
-
-ctx.stroke();
-
-
-ctx.restore();
-
-
-ctx.fillStyle =
-"#ffd44d";
-
-
-ctx.beginPath();
-
-
-ctx.moveTo(
-aimX-7,
-TOP-10
-);
-
-
-ctx.lineTo(
-aimX+7,
-TOP-10
-);
-
-
-ctx.lineTo(
-aimX,
-TOP
-);
-
-
-ctx.closePath();
-
-ctx.fill();
-
-
-/* DRAW ALL COINS */
-
-for(
-const coin
-of coins
-){
-
-drawCoin(
-coin
-);
-
-}
-
-}
-
-
-/* ===========================
-   LOOP
-=========================== */
 
 function loop(time){
+  const dt = Math.min(0.028, (time - lastTime) / 1000);
+  lastTime = time;
 
-let dt =
+  if(autoDropping && gameActive && time - lastAutoDrop > 260){
+    lastAutoDrop = time;
+    if(credits > 0){
+      dropCoin();
+    }else{
+      autoDropping = false;
+    }
+  }
 
-Math.min(
-
-0.028,
-
-(time-lastTime) /
-1000
-
-);
-
-
-lastTime =
-time;
-
-
-/* AUTO DROP */
-
-if(
-auto &&
-time-lastAuto >
-480
-){
-
-lastAuto =
-time;
-
-
-if(
-credits >
-0
-){
-
-dropCoin();
-
-}else{
-
-auto = false;
-
-
-autoBtn.textContent =
-"▶ 自動投幣：關";
-
+  step(dt);
+  draw();
+  requestAnimationFrame(loop);
 }
 
+function setAim(clientX, element){
+  const rect = element.getBoundingClientRect();
+  let x = (clientX - rect.left) / rect.width * W;
+
+  aimX = Math.max(
+    LEFT + COIN_R,
+    Math.min(RIGHT - COIN_R, x)
+  );
+
+  updateUI();
 }
 
+canvas.addEventListener("pointerdown", e=>{
+  setAim(e.clientX, canvas);
+});
 
-step(dt);
-
-draw();
-
-
-requestAnimationFrame(
-loop
-);
-
-}
-
-
-/* ===========================
-   AIM
-=========================== */
-
-function setAim(
-clientX,
-element
-){
-
-const rect =
-
-element.getBoundingClientRect();
-
-
-let x =
-
-(clientX -
-rect.left) /
-
-rect.width *
-
-W;
-
-
-aimX =
-
-Math.max(
-
-LEFT +
-COIN_R,
-
-Math.min(
-
-RIGHT -
-COIN_R,
-
-x
-
-)
-
-);
-
-
-updateHUD();
-
-}
-
-
-/* CLICK GAME */
-
-canvas.addEventListener(
-
-"pointerdown",
-
-e => {
-
-setAim(
-e.clientX,
-canvas
-);
-
-}
-
-);
-
-
-canvas.addEventListener(
-
-"pointermove",
-
-e => {
-
-if(
-
-e.buttons ||
-
-e.pointerType ===
-"touch"
-
-){
-
-setAim(
-e.clientX,
-canvas
-);
-
-}
-
-}
-
-);
-
-
-/* ===========================
-   SLIDER
-=========================== */
+canvas.addEventListener("pointermove", e=>{
+  if(e.buttons || e.pointerType === "touch"){
+    setAim(e.clientX, canvas);
+  }
+});
 
 function sliderAim(e){
-
-const rect =
-
-track.getBoundingClientRect();
-
-
-const percent =
-
-Math.max(
-
-0,
-
-Math.min(
-
-1,
-
-(e.clientX -
-rect.left) /
-
-rect.width
-
-)
-
-);
-
-
-aimX =
-
-LEFT +
-
-percent *
-
-(RIGHT-LEFT);
-
-
-aimX =
-
-Math.max(
-
-LEFT +
-COIN_R,
-
-Math.min(
-
-RIGHT -
-COIN_R,
-
-aimX
-
-)
-
-);
-
-
-updateHUD();
-
+  const rect = track.getBoundingClientRect();
+  const percent = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  aimX = LEFT + percent * (RIGHT - LEFT);
+  aimX = Math.max(LEFT + COIN_R, Math.min(RIGHT - COIN_R, aimX));
+  updateUI();
 }
 
+track.addEventListener("pointerdown", e=>{
+  e.preventDefault();
+  sliderAim(e);
+});
 
-track.addEventListener(
+track.addEventListener("pointermove", e=>{
+  if(e.buttons || e.pointerType === "touch"){
+    sliderAim(e);
+  }
+});
 
-"pointerdown",
+startAutoBtn.addEventListener("click", ()=>{
+  if(!gameActive){
+    resetGame();
+  }
+  autoDropping = true;
+  showFloat("開始投幣");
+});
 
-e => {
+stopAutoBtn.addEventListener("click", ()=>{
+  autoDropping = false;
+  showFloat("取消投幣");
+});
 
-e.preventDefault();
-
-sliderAim(e);
-
-}
-
-);
-
-
-track.addEventListener(
-
-"pointermove",
-
-e => {
-
-if(
-
-e.buttons ||
-
-e.pointerType ===
-"touch"
-
-){
-
-sliderAim(e);
-
-}
-
-}
-
-);
-
-
-/* ===========================
-   DROP BUTTON
-=========================== */
-
-dropBtn.addEventListener(
-
-"click",
-
-dropCoin
-
-);
-
-
-/* ===========================
-   AUTO BUTTON
-=========================== */
-
-autoBtn.addEventListener(
-
-"click",
-
-()=>{
-
-auto =
-!auto;
-
-
-if(
-auto
-){
-
-autoBtn.textContent =
-"⏸ 自動投幣：開";
-
-}else{
-
-autoBtn.textContent =
-"▶ 自動投幣：關";
-
-}
-
-}
-
-);
-
-
-/* ===========================
-   START
-=========================== */
-
-reset();
-
-
-lastTime =
-performance.now();
-
-
-requestAnimationFrame(
-loop
-);
-
+resetGame();
+lastTime = performance.now();
+requestAnimationFrame(loop);
 
 })();
 </script>
-
 </body>
 </html>
